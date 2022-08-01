@@ -1,0 +1,3 @@
+F:/c++/VS/stu/cmake-build-debug-/CMakeFiles/stu.dir
+F:/c++/VS/stu/cmake-build-debug-/CMakeFiles/edit_cache.dir
+F:/c++/VS/stu/cmake-build-debug-/CMakeFiles/rebuild_cache.dir

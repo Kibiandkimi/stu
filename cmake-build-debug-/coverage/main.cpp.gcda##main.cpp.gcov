@@ -1,0 +1,231 @@
+        -:    0:Source:F:/c++/VS/stu/main.cpp
+        -:    0:Graph:F:\c++\VS\stu\cmake-build-debug-\CMakeFiles\stu.dir\main.cpp.gcno
+        -:    0:Data:F:\c++\VS\stu\cmake-build-debug-\CMakeFiles\stu.dir\main.cpp.gcda
+        -:    0:Runs:1
+        -:    0:Programs:1
+        -:    1://
+        -:    2:// Created by kibi on 2021/8/24.
+        -:    3://
+        -:    4:#include <bits/stdc++.h>
+        -:    5:using namespace std;
+        -:    6:int n,m,a[500005];
+        -:    7:struct node{
+        -:    8:    int l,r,s,j,ls,rs,ss;
+function _ZN4node4initEiiiiiii called 39999 returned 100% blocks executed 100%
+    39999:    9:    void init(int l, int r, int s, int j, int ls, int rs, int ss){
+    39999:   10:        this->l = l;
+    39999:   11:        this->r = r;
+    39999:   12:        this->s = s;
+    39999:   13:        this->j = j;
+    39999:   14:        this->ls = ls;
+    39999:   15:        this->rs = rs;
+    39999:   16:        this->ss = ss;
+    39999:   17:    }
+function _ZN4node2chEiiii called 134478214 returned 100% blocks executed 100%
+134478214:   18:    void ch(int s, int ls, int rs, int ss){
+134478214:   19:        this->s = s;
+134478214:   20:        this->ls = ls;
+134478214:   21:        this->rs = rs;
+134478214:   22:        this->ss = ss;
+134478214:   23:    }
+function _ZN4node3chsEi called 5 returned 100% blocks executed 100%
+        5:   24:    void chs(int s){
+        5:   25:        this->s = s;
+        5:   26:        this->ls = s;
+        5:   27:        this->rs = s;
+        5:   28:        this->ss = s;
+        5:   29:    }
+function _ZNK4node3midEv called 134745262 returned 100% blocks executed 100%
+134745262:   30:    int mid() const{return (this->l+this->r)/2;}
+134745262:   30-block  0
+function _ZNK4node2pdEv called 269243404 returned 100% blocks executed 100%
+269243404:   31:    bool pd() const{return this->l == this->r;}
+269243404:   31-block  0
+        -:   32:}tr[2000005];
+function _Z5buildiii called 39999 returned 100% blocks executed 100%
+    39999:   33:void build(int l, int r, int x){
+    39999:   34:    if(l==r){
+    39999:   34-block  0
+branch  0 taken 20000 (fallthrough)
+branch  1 taken 19999
+    20000:   35:        tr[x].init(l, r, a[l], 0, a[l], a[l], a[l]);
+    20000:   35-block  0
+call    0 returned 20000
+    20000:   36:        return;
+        -:   37:    }
+    19999:   38:    int mid = (l+r)/2;
+    19999:   39:    build(l, mid, x*2);
+    19999:   39-block  0
+call    0 returned 19999
+    19999:   40:    build(mid+1, r, x*2+1);
+call    0 returned 19999
+        -:   41:    int ls, rs, ss;
+    19999:   42:    ls = max(tr[x*2].s+tr[x*2+1].ls, tr[x*2].ls);
+call    0 returned 19999
+    19999:   43:    rs = max(tr[x*2].rs+tr[x*2+1].s, tr[x*2+1].rs);
+call    0 returned 19999
+    19999:   44:    ss = max(max(tr[x*2].ss, tr[x*2+1].ss),tr[x*2].rs+tr[x*2+1].ls);
+call    0 returned 19999
+call    1 returned 19999
+    19999:   45:    tr[x].init(l, r, tr[x*2].s+tr[x*2+1].s, 0, ls, rs, ss);
+call    0 returned 19999
+        -:   46:}
+function _Z6changeiii called 77 returned 100% blocks executed 100%
+       77:   47:void change(int x, int d, int s){
+       77:   48:    if(tr[x].pd()){
+       77:   48-block  0
+call    0 returned 77
+branch  1 taken 5 (fallthrough)
+branch  2 taken 72
+        5:   49:        tr[x].chs(s);
+        5:   49-block  0
+call    0 returned 5
+        5:   50:        return;
+        -:   51:    }
+       72:   52:    int mid = tr[x].mid();
+       72:   52-block  0
+call    0 returned 72
+       72:   53:    if(d<=mid){
+branch  0 taken 67 (fallthrough)
+branch  1 taken 5
+       67:   54:        change(x*2, d, s);
+       67:   54-block  0
+call    0 returned 67
+        -:   55:    }else{
+        5:   56:        change(x*2+1, d, s);
+        5:   56-block  0
+call    0 returned 5
+        -:   57:    }
+        -:   58:    int ls, rs, ss, ts;
+       72:   59:    ts = tr[x*2].s+tr[x*2+1].s;
+       72:   60:    ls = max(tr[x*2].s+tr[x*2+1].ls, tr[x*2].ls);
+       72:   60-block  0
+call    0 returned 72
+       72:   61:    rs = max(tr[x*2].rs+tr[x*2+1].s, tr[x*2+1].rs);
+call    0 returned 72
+       72:   62:    ss = max(max(tr[x*2].ss, tr[x*2+1].ss),tr[x*2].rs+tr[x*2+1].ls);
+call    0 returned 72
+call    1 returned 72
+       72:   63:    tr[x].ch(ts, ls, rs, ss);
+call    0 returned 72
+        -:   64:}
+function _Z5queryiii called 269243327 returned 100% blocks executed 100%
+269243327:   65:node query(int l, int r, int x){
+269243327:   66:    if(tr[x].pd()){
+269243327:   66-block  0
+call    0 returned 269243327
+branch  1 taken 134498137 (fallthrough)
+branch  2 taken 134745190
+134498137:   67:        return tr[x];
+134498137:   67-block  0
+        -:   68:    }
+134745190:   69:    int mid = tr[x].mid();
+134745190:   69-block  0
+call    0 returned 134745190
+134745190:   70:    if(l > mid)return query(l,r,x*2+1);
+branch  0 taken 128928 (fallthrough)
+branch  1 taken 134616262
+   128928:   70-block  0
+call    2 returned 128928
+branch  3 taken 128928 (fallthrough)
+branch  4 taken 0 (throw)
+   128928:   70-block  1
+134616262:   71:    if(r <= mid)return query(l, r, x*2);
+134616262:   71-block  0
+branch  0 taken 138120 (fallthrough)
+branch  1 taken 134478142
+   138120:   71-block  1
+call    2 returned 138120
+branch  3 taken 138120 (fallthrough)
+branch  4 taken 0 (throw)
+   138120:   71-block  2
+        -:   72:
+134478142:   73:    node a = query(l, r, x*2), b = query(l, r, x*2+1), t{};
+134478142:   73-block  0
+call    0 returned 134478142
+branch  1 taken 134478142 (fallthrough)
+branch  2 taken 0 (throw)
+134478142:   73-block  1
+call    3 returned 134478142
+branch  4 taken 134478142 (fallthrough)
+branch  5 taken 0 (throw)
+        -:   74:    int s,ls,rs,ss;
+134478142:   75:    s = a.s+b.s;
+134478142:   76:    ls = max(a.s + b.ls, a.ls);
+134478142:   76-block  0
+call    0 returned 134478142
+134478142:   77:    rs = max(a.rs + b.s, b.rs);
+call    0 returned 134478142
+134478142:   78:    ss = max(max(a.ss, b.ss), a.rs+b.ls);
+call    0 returned 134478142
+call    1 returned 134478142
+134478142:   79:    t.ch(s, ls, rs, ss);
+call    0 returned 134478142
+134478142:   80:    return t;
+        -:   81:}
+function main called 1 returned 100% blocks executed 92%
+        1:   82:int main(){
+        1:   83:    cin >> n >> m;
+        1:   83-block  0
+call    0 returned 1
+call    1 returned 1
+    20001:   84:    for(int i = 1; i <= n; i++)scanf("%d", &a[i]);
+    20001:   84-block  0
+branch  0 taken 20000 (fallthrough)
+branch  1 taken 1
+    20000:   84-block  1
+call    2 returned 20000
+        1:   85:    build(1, n, 1);
+        1:   85-block  0
+call    0 returned 1
+    20001:   86:    while(m--){
+    20001:   86-block  0
+branch  0 taken 20000 (fallthrough)
+branch  1 taken 1
+    20000:   86-block  1
+        -:   87:        int fl;
+    20000:   88:        scanf("%d", &fl);
+    20000:   88-block  0
+call    0 returned 20000
+branch  1 taken 20000 (fallthrough)
+branch  2 taken 0 (throw)
+    20000:   89:        if(fl == 1){
+    20000:   89-block  0
+branch  0 taken 19995 (fallthrough)
+branch  1 taken 5
+        -:   90:            int a,b;
+    19995:   91:            scanf("%d %d", &a, &b);
+    19995:   91-block  0
+call    0 returned 19995
+branch  1 taken 19995 (fallthrough)
+branch  2 taken 0 (throw)
+    19995:   92:            int l = min(a,b),r = max(a,b);
+    19995:   92-block  0
+call    0 returned 19995
+call    1 returned 19995
+    19995:   93:            int s = query(l, r, 1).ss;
+call    0 returned 19995
+branch  1 taken 19995 (fallthrough)
+branch  2 taken 0 (throw)
+    19995:   94:            printf("%d\n", s);
+    19995:   94-block  0
+call    0 returned 19995
+branch  1 taken 19995 (fallthrough)
+branch  2 taken 0 (throw)
+        -:   95:        }else{
+        -:   96:            int a,b;
+        5:   97:            scanf("%d %d", &a, &b);
+        5:   97-block  0
+call    0 returned 5
+branch  1 taken 5 (fallthrough)
+branch  2 taken 0 (throw)
+        5:   98:            change(1, a, b);
+        5:   98-block  0
+call    0 returned 5
+branch  1 taken 5 (fallthrough)
+branch  2 taken 0 (throw)
+        -:   99:        }
+        -:  100:    }
+        1:  101:}
+        1:  101-block  0
+        1:  101-block  1
