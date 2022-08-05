@@ -17,26 +17,6 @@
 					<DistClean command="/usr/bin/make -j16 -f &quot;/mnt/f/c++/VS/stu/cmake-build-wsl/Makefile&quot;  VERBOSE=1 clean"/>
 				</MakeCommands>
 			</Target>
-			<Target title="rebuild_cache">
-				<Option working_dir="/mnt/f/c++/VS/stu/cmake-build-wsl"/>
-				<Option type="4"/>
-				<MakeCommands>
-					<Build command="/usr/bin/make -j16 -f &quot;/mnt/f/c++/VS/stu/cmake-build-wsl/Makefile&quot;  VERBOSE=1 rebuild_cache"/>
-					<CompileFile command="/usr/bin/make -j16 -f &quot;/mnt/f/c++/VS/stu/cmake-build-wsl/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
-					<Clean command="/usr/bin/make -j16 -f &quot;/mnt/f/c++/VS/stu/cmake-build-wsl/Makefile&quot;  VERBOSE=1 clean"/>
-					<DistClean command="/usr/bin/make -j16 -f &quot;/mnt/f/c++/VS/stu/cmake-build-wsl/Makefile&quot;  VERBOSE=1 clean"/>
-				</MakeCommands>
-			</Target>
-			<Target title="edit_cache">
-				<Option working_dir="/mnt/f/c++/VS/stu/cmake-build-wsl"/>
-				<Option type="4"/>
-				<MakeCommands>
-					<Build command="/usr/bin/make -j16 -f &quot;/mnt/f/c++/VS/stu/cmake-build-wsl/Makefile&quot;  VERBOSE=1 edit_cache"/>
-					<CompileFile command="/usr/bin/make -j16 -f &quot;/mnt/f/c++/VS/stu/cmake-build-wsl/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
-					<Clean command="/usr/bin/make -j16 -f &quot;/mnt/f/c++/VS/stu/cmake-build-wsl/Makefile&quot;  VERBOSE=1 clean"/>
-					<DistClean command="/usr/bin/make -j16 -f &quot;/mnt/f/c++/VS/stu/cmake-build-wsl/Makefile&quot;  VERBOSE=1 clean"/>
-				</MakeCommands>
-			</Target>
 			<Target title="stu">
 				<Option output="/mnt/f/c++/VS/stu/cmake-build-wsl/stu" prefix_auto="0" extension_auto="0"/>
 				<Option working_dir="/mnt/f/c++/VS/stu/cmake-build-wsl"/>
@@ -76,6 +56,26 @@
 				</Compiler>
 				<MakeCommands>
 					<Build command="/usr/bin/make -j16 -f &quot;/mnt/f/c++/VS/stu/cmake-build-wsl/Makefile&quot;  VERBOSE=1 stu/fast"/>
+					<CompileFile command="/usr/bin/make -j16 -f &quot;/mnt/f/c++/VS/stu/cmake-build-wsl/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j16 -f &quot;/mnt/f/c++/VS/stu/cmake-build-wsl/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j16 -f &quot;/mnt/f/c++/VS/stu/cmake-build-wsl/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="edit_cache">
+				<Option working_dir="/mnt/f/c++/VS/stu/cmake-build-wsl"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j16 -f &quot;/mnt/f/c++/VS/stu/cmake-build-wsl/Makefile&quot;  VERBOSE=1 edit_cache"/>
+					<CompileFile command="/usr/bin/make -j16 -f &quot;/mnt/f/c++/VS/stu/cmake-build-wsl/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j16 -f &quot;/mnt/f/c++/VS/stu/cmake-build-wsl/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j16 -f &quot;/mnt/f/c++/VS/stu/cmake-build-wsl/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="rebuild_cache">
+				<Option working_dir="/mnt/f/c++/VS/stu/cmake-build-wsl"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j16 -f &quot;/mnt/f/c++/VS/stu/cmake-build-wsl/Makefile&quot;  VERBOSE=1 rebuild_cache"/>
 					<CompileFile command="/usr/bin/make -j16 -f &quot;/mnt/f/c++/VS/stu/cmake-build-wsl/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
 					<Clean command="/usr/bin/make -j16 -f &quot;/mnt/f/c++/VS/stu/cmake-build-wsl/Makefile&quot;  VERBOSE=1 clean"/>
 					<DistClean command="/usr/bin/make -j16 -f &quot;/mnt/f/c++/VS/stu/cmake-build-wsl/Makefile&quot;  VERBOSE=1 clean"/>
