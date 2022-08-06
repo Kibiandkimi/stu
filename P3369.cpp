@@ -1,7 +1,7 @@
 //
 // Created by kibi on 2022/8/5.
 //
-//old在上面, new在下面, details看git
+//old在上面, new在下面, details看git, twice在最下
 
 /*
 #include <bits/stdc++.h>
@@ -130,6 +130,7 @@ int main(){
 }
 */
 
+/*
 #include <bits/stdc++.h>
 using namespace std;
 int n, root;
@@ -262,6 +263,107 @@ int main(){
                 break;
             case 6:
                 printf("%d\n", query_nxt(x));
+        }
+    }
+}
+*/
+
+#include <bits/stdc++.h>
+using namespace std;
+int n, val[100005], son[100005][2], siz[100005], rnk[100005], root, cnt;
+
+void update(int x){
+    siz[x] = siz[son[x][0]] + siz[son[x][1]] + 1;
+}
+
+void splite(int &x, int &y, int k, int pos){
+    if(!pos){
+        x = 0, y = 0;
+    }else{
+        if(val[pos] <= k){
+            x = pos;
+            splite(son[pos][1], y, k, son[pos][1]);
+        }else{
+            y = pos;
+            splite(x, son[pos][0], k, son[pos][0]);
+        }
+        update(pos);
+    }
+}
+
+int merge(int x, int y){
+    if(!(x&&y)){
+        return x+y;
+    }
+    if(rnk[x] < rnk[y]){
+        son[x][1] = merge(son[x][1], y);
+        update(x);
+        return x;
+    }else{
+        son[y][0] = merge(x, son[y][0]);
+        update(y);
+        return y;
+    }
+}
+
+int new_node(int x){
+    val[++cnt] = x;
+    siz[cnt] = 1;
+    rnk[cnt] = rand();
+    return cnt;
+}
+
+int qrk(int k, int pos){
+    //    int pos = root;
+    while(true){
+        if(siz[son[pos][0]] >= k){
+            pos = son[pos][0];
+        }else if(siz[son[pos][0]]+1==k){
+            return pos;
+        }else{
+            k -= siz[son[pos][0]] + 1;
+            pos = son[pos][1];
+        }
+    }
+}
+
+int main(){
+    srand((unsigned)time(nullptr));
+    scanf("%d", &n);
+    for(int i = 1; i <= n; i++){
+        int opt, x;
+        scanf("%d %d", &opt, &x);
+        int l, r, t;
+        switch (opt) {
+            case 1:
+                splite(l, r, x, root);
+                root = merge(merge(l, new_node(x)), r);
+                break;
+            case 2:
+                //                int l, t, r;
+                splite(l, t, x, root);
+                splite(l, r, x-1, l);
+                r = merge(son[r][0], son[r][1]);
+                root = merge(merge(l, r), t);
+                break;
+            case 3:
+                splite(l, r, x-1, root);
+                printf("%d\n", siz[l]+1);
+                root = merge(l, r);
+                break;
+            case 4:
+                printf("%d\n", val[qrk(x, root)]);
+                break;
+            case 5:
+                splite(l, r, x-1, root);
+                printf("%d\n", val[qrk(siz[l], l)]);
+                root = merge(l, r);
+                break;
+            case 6:
+                splite(l, r, x, root);
+                printf("%d\n", val[qrk(1, r)]);
+                root = merge(l, r);
+                break;
         }
     }
 }
