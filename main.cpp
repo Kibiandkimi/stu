@@ -4,7 +4,6 @@ int n, m;
 const int mod = 998244353;
 struct node{
     int l, r, ls, rs, v;
-    bool f;
 }tr[4000005];
 struct island{
     int l, r, h;
@@ -16,7 +15,7 @@ bool cmp(island a, island b){
 
 int a[500005];
 void build(int u, int l, int r){
-    tr[u].l = l, tr[u].r = r, tr[u].f = false;
+    tr[u].l = l, tr[u].r = r;
     if(l == r){
         tr[u].v = a[l];
         return ;
@@ -29,13 +28,7 @@ void build(int u, int l, int r){
 
 int query(int u, int l, int r){
     if(l<=tr[u].l&&tr[u].r<=r){
-        tr[u].f = true;
-        int t = tr[u].v;
-        tr[u].v = 0;
-        return t % mod;
-    }
-    if(tr[u].f){
-        return 0;
+        return tr[u].v % mod;
     }
     int ans = 0;
     if(l<=tr[tr[u].ls].r){
@@ -44,8 +37,7 @@ int query(int u, int l, int r){
     if(r>=tr[tr[u].rs].l){
         ans = (ans+query(tr[u].rs, l, r))%mod;
     }
-    tr[u].v = tr[tr[u].ls].v + tr[tr[u].rs].v;
-    return ans;
+    return ans % mod;
 }
 
 void add(int u, int x, int v){
@@ -54,32 +46,25 @@ void add(int u, int x, int v){
         return;
     }
     if(x <= tr[tr[u].ls].r){
-        if(tr[u].f){
-            tr[tr[u].rs].f = true;
-        }
         add(tr[u].ls, x, v);
     }else{
-        if(tr[u].f){
-            tr[tr[u].ls].f = true;
-        }
         add(tr[u].rs, x, v);
     }
-    tr[u].f = false;
 }
 
-//void clear(int u, int l, int r){
-//    if(tr[u].l == tr[u].r){
-//        tr[u].v = 0;
-//        return ;
-//    }
-//    if(l<=tr[tr[u].ls].r){
-//        clear(tr[u].ls, l, r);
-//    }
-//    if(r>=tr[tr[u].rs].l){
-//        clear(tr[u].rs, l, r);
-//    }
-//    tr[u].v = tr[tr[u].ls].v + tr[tr[u].rs].v;
-//}
+void clear(int u, int l, int r){
+    if(tr[u].l == tr[u].r){
+        tr[u].v = 0;
+        return ;
+    }
+    if(l<=tr[tr[u].ls].r){
+        clear(tr[u].ls, l, r);
+    }
+    if(r>=tr[tr[u].rs].l){
+        clear(tr[u].rs, l, r);
+    }
+    tr[u].v = tr[tr[u].ls].v + tr[tr[u].rs].v;
+}
 
 int main(){
     scanf("%d %d", &n, &m);
@@ -109,7 +94,7 @@ int main(){
             }
         }
         int v = query(1, is[i].l, is[i].r);
-//        clear(1, is[i].l, is[i].r);
+        clear(1, is[i].l, is[i].r);
         q.push({{is[i].l, is[i].r}, v});
 //        q.push();
     }
