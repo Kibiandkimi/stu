@@ -43,10 +43,10 @@ cmake_force:
 SHELL = cmd.exe
 
 # The CMake executable.
-CMAKE_COMMAND = "G:\Program Files\JetBrains\CLion 222.3345.16\bin\cmake\win\bin\cmake.exe"
+CMAKE_COMMAND = "G:\Program Files\JetBrains\CLion 2022.2\bin\cmake\win\bin\cmake.exe"
 
 # The command to remove a file.
-RM = "G:\Program Files\JetBrains\CLion 222.3345.16\bin\cmake\win\bin\cmake.exe" -E rm -f
+RM = "G:\Program Files\JetBrains\CLion 2022.2\bin\cmake\win\bin\cmake.exe" -E rm -f
 
 # Escaping for special characters.
 EQUALS = =

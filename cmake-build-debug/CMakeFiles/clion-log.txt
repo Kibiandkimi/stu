@@ -1,4 +1,4 @@
-"G:\Program Files\JetBrains\CLion 222.3345.16\bin\cmake\win\bin\cmake.exe" -DCMAKE_BUILD_TYPE=Debug -G "CodeBlocks - MinGW Makefiles" -S F:\c++\VS\stu -B F:\c++\VS\stu\cmake-build-debug
+"G:\Program Files\JetBrains\CLion 2022.2\bin\cmake\win\bin\cmake.exe" -DCMAKE_BUILD_TYPE=Debug -G "CodeBlocks - MinGW Makefiles" -S F:\c++\VS\stu -B F:\c++\VS\stu\cmake-build-debug
 -- The C compiler identification is GNU 8.1.0
 -- The CXX compiler identification is GNU 8.1.0
 -- Detecting C compiler ABI info

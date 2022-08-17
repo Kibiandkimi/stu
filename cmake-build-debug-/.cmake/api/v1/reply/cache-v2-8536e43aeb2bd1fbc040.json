@@ -55,7 +55,7 @@
 				}
 			],
 			"type" : "INTERNAL",
-			"value" : "f:/c++/VS/stu/cmake-build-debug"
+			"value" : "f:/c++/VS/stu/cmake-build-debug-"
 		},
 		{
 			"name" : "CMAKE_CACHE_MAJOR_VERSION",
@@ -155,7 +155,7 @@
 				}
 			],
 			"type" : "INTERNAL",
-			"value" : "G:/Program Files/JetBrains/CLion 222.3345.16/bin/cmake/win/bin/cmake.exe"
+			"value" : "G:/Program Files/JetBrains/CLion 2022.2/bin/cmake/win/bin/cmake.exe"
 		},
 		{
 			"name" : "CMAKE_CPACK_COMMAND",
@@ -167,7 +167,7 @@
 				}
 			],
 			"type" : "INTERNAL",
-			"value" : "G:/Program Files/JetBrains/CLion 222.3345.16/bin/cmake/win/bin/cpack.exe"
+			"value" : "G:/Program Files/JetBrains/CLion 2022.2/bin/cmake/win/bin/cpack.exe"
 		},
 		{
 			"name" : "CMAKE_CTEST_COMMAND",
@@ -179,7 +179,7 @@
 				}
 			],
 			"type" : "INTERNAL",
-			"value" : "G:/Program Files/JetBrains/CLion 222.3345.16/bin/cmake/win/bin/ctest.exe"
+			"value" : "G:/Program Files/JetBrains/CLion 2022.2/bin/cmake/win/bin/ctest.exe"
 		},
 		{
 			"name" : "CMAKE_CXX_COMPILER",
@@ -243,7 +243,7 @@
 				}
 			],
 			"type" : "STRING",
-			"value" : ""
+			"value" : "--coverage"
 		},
 		{
 			"name" : "CMAKE_CXX_FLAGS_DEBUG",
@@ -387,7 +387,7 @@
 				}
 			],
 			"type" : "STRING",
-			"value" : ""
+			"value" : "--coverage"
 		},
 		{
 			"name" : "CMAKE_C_FLAGS_DEBUG",
@@ -1091,7 +1091,7 @@
 				}
 			],
 			"type" : "INTERNAL",
-			"value" : "G:/Program Files/JetBrains/CLion 222.3345.16/bin/cmake/win/share/cmake-3.23"
+			"value" : "G:/Program Files/JetBrains/CLion 2022.2/bin/cmake/win/share/cmake-3.23"
 		},
 		{
 			"name" : "CMAKE_SHARED_LINKER_FLAGS",
@@ -1327,7 +1327,7 @@
 				}
 			],
 			"type" : "STATIC",
-			"value" : "F:/c++/VS/stu/cmake-build-debug"
+			"value" : "F:/c++/VS/stu/cmake-build-debug-"
 		},
 		{
 			"name" : "stu_IS_TOP_LEVEL",
