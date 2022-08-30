@@ -120,6 +120,7 @@ int getMax(int x, int y, int z){
 
 Ret op1(int x, int y, int z){
     int jump(int &from, int to = -1);
+    int getDifferent(int x, int y, int z);
     int ans = 0, o = -1;
     while(dot[x].top != dot[y].top && dot[y].top != dot[z].top){
         int d = getMax(dot[dot[x].top].dep, dot[dot[y].top].dep, dot[dot[z].top].dep);
@@ -129,6 +130,13 @@ Ret op1(int x, int y, int z){
             ans += jump(y);
         }else{
             ans += jump(z);
+        }
+    }
+    int t = getDifferent(dot[x].top, dot[y].top, dot[z].top);
+    if(t != -1){
+        int &now = t==1?x:t==2?y:z, oth = t==1?y:t==2?z:x;
+        while(dot[now].top!=dot[oth].top && dot[dot[now].top].dep > dot[dot[oth].top].dep){
+            ans += jump(now);
         }
     }
     int nx, ny;
@@ -213,4 +221,17 @@ int jump(int &from, int to = -1){
     int res = dot[from].dep - dot[to].dep;
     from = to;
     return res;
+}
+
+int getDifferent(int x, int y, int z){
+    if(x == y && y == z){
+        return -1;
+    }
+    if(x == y){
+        return 3;
+    }else if(x == z){
+        return 2;
+    }else{
+        return 1;
+    }
 }
