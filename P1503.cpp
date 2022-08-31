@@ -1,7 +1,7 @@
 //
 // Created by kibi on 22-8-9.
 //
-//AVL在上(28pts) fhq-treap在下(9pts)
+//AVL在上(28pts) fhq-treap在下(100pts)
 
 /*
 #include <bits/stdc++.h>
@@ -282,11 +282,11 @@ void split(int &x, int &y, int k, int pos){
         if (val[pos] <= k) {
             x = pos;
             split(son[pos][1], y, k, son[pos][1]);
-//            update(x);
+            //            update(x);
         }else{
             y = pos;
             split(x, son[pos][0], k, son[pos][0]);
-//            update(y);
+            //            update(y);
         }
         update(pos);
     }
@@ -317,7 +317,7 @@ int query_rnk(int k, int pos){
         }else if(siz[son[pos][0]]+1 == k){
             return val[pos];
         }else{
-            k -= siz[son[pos][0]];
+            k -= siz[son[pos][0]]+1;
             pos = son[pos][1];
         }
     }
