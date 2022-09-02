@@ -1,6 +1,7 @@
 //
 // Created by kibi on 2022/9/1.
 //
+//TODO 40pts
 #include <bits/stdc++.h>
 static const int r4 = 1461, r400 = 146097, r100 = 36524;
 using namespace std;
@@ -31,7 +32,7 @@ int main(){
         int year, month, day;
         if(r <= 1721423){
             bc = true;
-            int round4 = r% r4, y = r/ r4;
+            int round4 = ((r-1) % r4)+1, y = (r-1)/ r4;
             if(round4 <= 366){
                 node res = queryMonthsAndDays(round4, true);
                 month = res.month, day = res.day, year = 4713-y*4;
@@ -47,7 +48,7 @@ int main(){
         }else{
             r -= 1721423;
             if(r <= 577733){
-                int round4 = r% r4, y = r/ r4;
+                int round4 = ((r-1) % r4)+1, y = (r-1)/ r4;
                 y*=4;
                 y++;
                 if(round4 > 1095){
@@ -76,8 +77,9 @@ int main(){
                         month = 12, day = r-30, year = 1582;
                     }
                 }else{
-                    r -= 78;
-                    r -= 13;
+                    //                    r -= 78;
+                    //                    r -= 13;
+                    r -= 92;
                     y++;
                     if(r <= 365){
                         node res = queryMonthsAndDays(r);
@@ -89,17 +91,17 @@ int main(){
                         }else {
                             r -= 6210;
                             y += 17;
-                            int round4 = r % r400, ty = r / r400;
+                            int round4 = ((r-1) % r400) + 1, ty = r / r400;
                             ty *= 400;
-                            if((round4-1)/r100>3){
+                            if((round4-1)/r100>=3){
                                 round4 -= 3*r100;
                                 ty += 300;
                                 dealR4(round4, ty+y, year, month, day);
                             }else{
                                 ty += ((round4-1)/r100)*100;
-                                round4 = (round4-1)%r100;
+                                round4 = ((round4-1)%r100)+1;
                                 if((round4 + 365)>r100){
-                                    round4 = round4 - r100 + 366;
+                                    round4 = round4 - r100 + 365;
                                     ty += 100;
                                     node res = queryMonthsAndDays(round4, true);
                                     month = res.month, day = res.day, year = ty+y;
@@ -121,7 +123,7 @@ int main(){
 }
 
 void dealR4(long long int r, int y, int &year, int &month, int &day) {
-    int round4 = r % r4, ty = r / r4;
+    int round4 = ((r-1) % r4)+1, ty = (r-1) / r4;
     ty *= 4;
     if (round4 <= 366) {
         ty++;
@@ -129,7 +131,7 @@ void dealR4(long long int r, int y, int &year, int &month, int &day) {
         month = res.month, day = res.day, year = ty + y;
     } else {
         round4 -= 366;
-        ty++;
+        ty+=2;
         ty += (round4 - 1) / 365;
         round4 = (round4 - 1) % 365 + 1;
         node res = queryMonthsAndDays(round4);
