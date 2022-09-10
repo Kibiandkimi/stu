@@ -1,3 +1,0 @@
-"G:\Program Files\JetBrains\CLion 2022.2\bin\cmake\win\bin\cmake.exe" -E rm -f CMakeFiles\stu.dir/objects.a
-G:\mingw64\mingw64\bin\ar.exe qc CMakeFiles\stu.dir/objects.a @CMakeFiles\stu.dir\objects1.rsp
-G:\mingw64\mingw64\bin\g++.exe -g -Wl,--whole-archive CMakeFiles\stu.dir/objects.a -Wl,--no-whole-archive -o stu.exe -Wl,--out-implib,libstu.dll.a -Wl,--major-image-version,0,--minor-image-version,0 @CMakeFiles\stu.dir\linklibs.rsp

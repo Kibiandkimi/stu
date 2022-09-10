@@ -1,3 +1,0 @@
-/mnt/f/c++/VS/stu/cmake-build-wsl/CMakeFiles/stu.dir
-/mnt/f/c++/VS/stu/cmake-build-wsl/CMakeFiles/edit_cache.dir
-/mnt/f/c++/VS/stu/cmake-build-wsl/CMakeFiles/rebuild_cache.dir
