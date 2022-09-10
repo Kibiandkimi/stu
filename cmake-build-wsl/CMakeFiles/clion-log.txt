@@ -1,4 +1,2 @@
-C:\WINDOWS\system32\wsl.exe --distribution Ubuntu --exec /bin/bash -c "export CMAKE_COLOR_DIAGNOSTICS=ON && export CLION_IDE=TRUE && export JETBRAINS_IDE=TRUE && cd '/mnt/f/c++/VS/stu/cmake-build-wsl' && /home/kibi/cmake-3.24.0-rc5-linux-x86_64/bin/cmake -DCMAKE_BUILD_TYPE=Debug -G 'CodeBlocks - Unix Makefiles' -S '/mnt/f/c++/VS/stu' -B '/mnt/f/c++/VS/stu/cmake-build-wsl'"
--- Configuring done
--- Generating done
--- Build files have been written to: /mnt/f/c++/VS/stu/cmake-build-wsl
+C:\WINDOWS\system32\wsl.exe --distribution Ubuntu --exec /bin/bash -c "export CMAKE_COLOR_DIAGNOSTICS=ON && export CLION_IDE=TRUE && export JETBRAINS_IDE=TRUE && cd '/mnt/f/c++/VS/stu/cmake-build-wsl' && /home/kibi/cmake-3.24.0-rc5-linux-x86_64/bin/cmake -DCMAKE_BUILD_TYPE=Debug -G 'CodeBlocks - Unix Makefiles' '/mnt/f/c++/VS/stu'"
+/bin/bash: line 1: /home/kibi/cmake-3.24.0-rc5-linux-x86_64/bin/cmake: No such file or directory
