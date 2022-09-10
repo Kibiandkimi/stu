@@ -3,7 +3,7 @@ using namespace std;
 int n, v, a[2000005], mx[2000005], b[2000005], p;
 long long s[2000005];
 struct node{
-    int l, r, ls, rs, id;
+    int l, r, id;
     long long v;
 }tr[4000005];
 
@@ -27,7 +27,6 @@ int main(){
         }else{
             mx[i] = b[p] = b[p]+v;
         }
-//        mx[i] = max(mx[i-1], a[i]);
     }
     build(1, 1, n);
 //    int T;
@@ -70,12 +69,12 @@ void read(int &x){
 }
 
 void upd(int u){
-    if(tr[tr[u].ls].v>tr[tr[u].rs].v){
-        tr[u].v = tr[tr[u].ls].v;
-        tr[u].id = tr[tr[u].ls].id;
+    if(tr[u*2].v>tr[u*2+1].v){
+        tr[u].v = tr[u*2].v;
+        tr[u].id = tr[u*2].id;
     }else{
-        tr[u].v = tr[tr[u].rs].v;
-        tr[u].id = tr[tr[u].rs].id;
+        tr[u].v = tr[u*2+1].v;
+        tr[u].id = tr[u*2+1].id;
     }
 }
 
@@ -86,13 +85,13 @@ void build(int u, int l, int r){
         tr[u].v = s[l];
         return;
     }
-    tr[u].ls = u*2;
-    tr[u].rs = u*2+1;
+//    u*2 = u*2;
+//    u*2+1 = u*2+1;
     int mid = (l+r)/2;
-    build(tr[u].ls, l, mid);
-    build(tr[u].rs, mid+1, r);
+    build(u*2, l, mid);
+    build(u*2+1, mid+1, r);
     upd(u);
-//    tr[u].v = max(tr[tr[u].ls].v, tr[tr[u].rs].v);
+//    tr[u].v = max(tr[u*2].v, tr[u*2+1].v);
 }
 
 int query(int u, int l, int r){
@@ -100,11 +99,11 @@ int query(int u, int l, int r){
         return tr[u].id;
     }
     int t1 = 0, t2 = 0;
-    if(l<=tr[tr[u].ls].r){
-        t1 = query(tr[u].ls, l, r);
+    if(l<=tr[u*2].r){
+        t1 = query(u*2, l, r);
     }
-    if(r>=tr[tr[u].rs].l){
-        t2 = query(tr[u].rs, l, r);
+    if(r>=tr[u*2+1].l){
+        t2 = query(u*2+1, l, r);
     }
     if(!t1){
         return t2;
@@ -120,10 +119,10 @@ int query(int u, int l, int r){
 //        tr[u].v = v;
 //        return;
 //    }
-//    if(x<=tr[tr[u].ls].r){
-//        change(tr[u].ls, x, v);
+//    if(x<=tr[u*2].r){
+//        change(u*2, x, v);
 //    }else{
-//        change(tr[u].rs, x, v);
+//        change(u*2+1, x, v);
 //    }
 //    upd(u);
 //}
