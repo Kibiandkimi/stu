@@ -1,5 +1,23 @@
 #include<bits/stdc++.h>
 using namespace std;
+static char buf[1000000],*p1=buf,*p2=buf,obuf[1000000],*p3=obuf;
+#define getchar() p1==p2&&(p2=(p1=buf)+fread(buf,1,1000000,stdin),p1==p2)?EOF:*p1++
+#define putchar(x) (p3-obuf<1000000)?(*p3++=x):(fwrite(obuf,p3-obuf,1,stdout),p3=obuf,*p3++=x)
+//template<int>
+inline void read(register int &x){
+    x=0;register int f=1;register char c=getchar();
+    while(c<'0'||c>'9'){if(c=='-')f=-1;c=getchar();}
+    while(c>='0'&&c<='9')x=(x<<3)+(x<<1)+(c^48),c=getchar();
+    x*=f;
+}
+static char cc[20];
+//template<int>
+inline void print(register int x){
+    register int len=0;
+    if(x<0)x=-x,putchar('-');
+    while(x)cc[len++]=x%10+'0',x/=10;
+    while(len--)putchar(cc[len]);
+}
 int n,m,root[8000000],cnt=0,aa[300100],bb[300100],ar[300100];
 struct nb{
     int l,r,sum;
@@ -36,9 +54,13 @@ int query(int x,int y,int l,int r,int pos){
     }
 }
 int main(){
-    cin>>n>>m;
+     read(n), read(m);
+//    scanf("%d %d", &n, &m);
+    //    cin>>n>>m;
     for(int i=1;i<=n;i++){
-        cin>>aa[i];
+         read(aa[i]);
+//        scanf("%d", &aa[i]);
+        //        cin>>aa[i];
         bb[i]=aa[i];
     }
     sort(bb+1,bb+n+1);
@@ -51,17 +73,29 @@ int main(){
     }
     for(int i=1;i<=m;i++){
         int a,b,c,d;
-        cin>>a;
+//        scanf("%d", &a);
+        read(a);
+        //        cin>>a;
         if(a==1){
-            cin>>b>>c>>d;
+//            scanf("%d %d %d", &b, &c, &d);
+             read(b), read(c), read(d);
+            //            cin>>b>>c>>d;
             if(!ar[d]){
-                cout << 0 << endl;
+//                print(0);
+//                putchar('\n');
+                //                cout << 0 << endl;
+                printf("0\n");
                 continue ;
             }
-            cout<<query(root[b-1],root[c],1,len,ar[d])<<endl;
+//            print(query(root[b-1],root[c],1,len,ar[d]));
+//            putchar('\n');
+            printf("%d\n", query(root[b-1],root[c],1,len,ar[d]));
+            //            cout<<query(root[b-1],root[c],1,len,ar[d])<<endl;
         }
         else{
-            cin>>b;
+//            scanf("%d", &b);
+             read(b);
+            //            cin>>b;
             if(aa[b] == aa[b+1]){
                 continue ;
             }
@@ -70,5 +104,6 @@ int main(){
             swap(aa[b],aa[b+1]);
         }
     }
+//    fwrite(obuf,p3-obuf,1,stdout);
     return 0;
 }
