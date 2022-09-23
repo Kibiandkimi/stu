@@ -1,3 +1,0 @@
-/media/kibi/资料~~~/c++/VS/stu/cmake-build-debug-linux/CMakeFiles/stu.dir
-/media/kibi/资料~~~/c++/VS/stu/cmake-build-debug-linux/CMakeFiles/edit_cache.dir
-/media/kibi/资料~~~/c++/VS/stu/cmake-build-debug-linux/CMakeFiles/rebuild_cache.dir

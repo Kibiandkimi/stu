@@ -4,7 +4,8 @@
 //
 // Created by kibi on 22-9-4.
 //
-//TODO 0pts because of no '/n' in last line, fix it
+//Solved 0pts because of no '/n' in last line, fix it (60pts, same problem?)
+//add c != EOF
 #include <bits/stdc++.h>
 using namespace std;
 int n;
@@ -17,13 +18,11 @@ int main(){
     for(int i = 1; i <= n; i++){
         a = false, b = false, f = false;
         int c = getchar();
-        while(c != '\n'){
+        while(c != '\n' && c != EOF){
             if(!a && c != '#' && c != ' '){
                 break;
-            }
-            if(!a && c == '#'){
+            }else if(!a && c == '#'){
                 a = true;
-                //                continue;
             }else if(!a){
 
             }else if(!b && c != ' '){
@@ -37,7 +36,7 @@ int main(){
             c = getchar();
         }
         if(n != i) {
-            while (c != '\n') {
+            while (c != '\n' && c != EOF) {
                 c = getchar();
             }
         }
