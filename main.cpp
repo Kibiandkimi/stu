@@ -23,20 +23,23 @@ bool temCmp(node a, node b);
 
 int main(){
     read(n), read(m);
-    for(int i = 1; i <= n; i++){
+    for(int i = 1; i <= m; i++){
         int u, v, s;
         double r;
         read(u), read(v), read(s), read(r);
         int now = s, res = 0;
         while(now){
             res += now;
-            now = (int)((double)now*r);
+            now = floor((double)now*r);
         }
         rg[u].emplace_back(v, s, res);
     }
     read(rt);
     f(rt);
     for(int i = 1; i <= n; i++){
+        if(!vis[i]){
+            continue;
+        }
         for(auto j : rg[i]){
             if(!vis[j.v]){
                 continue;
@@ -46,17 +49,17 @@ int main(){
 //                ans += j.w;
                 continue;
             }
-            tem[++temCnt] = {y[i], y[j.v], j.s};
+            tem[++temCnt] = {y[i]/* u */, y[j.v]/* v */, j.s/* s */};
         }
     }
     sort(tem+1, tem+temCnt+1, temCmp);
     for(int i = 1; i <= temCnt; i++){
-        if(ng[tem[i].v].empty() || ng[tem[i].v].back().v != tem[i].s){
+        if(ng[tem[i].v].empty() || ng[tem[i].v][ng[tem[i].v].size()-1].v != tem[i].s){
             ng[tem[i].v].emplace_back(tem[i].s, tem[i].w, tem[i].w);
             in[tem[i].s]++;
         }
         else{
-            ng[tem[i].v].back().w = ng[tem[i].v].back().s = max(ng[tem[i].v].back().s, tem[i].w);
+            ng[tem[i].v][ng[tem[i].v].size()-1].w = ng[tem[i].v][ng[tem[i].v].size()-1].s = max(ng[tem[i].v][ng[tem[i].v].size()-1].s, tem[i].w);
         }
     }
 
