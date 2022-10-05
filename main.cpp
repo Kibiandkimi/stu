@@ -72,16 +72,16 @@ void f(int u, int fa, bool tem){
     }
     if(siz[u] != 1) {
         int sg = g[u].size();
-        long long lastMx = 0;
+        int lastMx = 0;
         for (int i = 0, mxi = sg; i < mxi; i++) {
             int &v = g[u][i];
             if(v == fa){
                 continue;
             }
-            for (int j = siz[u] - lastMx - 1, mxj = siz[u] - i - 1; j <= mxj; j++) {
+            for (int j = siz[u] - (lastMx + 1), mxj = siz[u] - (i + 1); j <= mxj; j++) {
 //                j = siz - t
 //                siz - j = siz - siz + t = t
-                for(int k = siz[v], mnk = 0; k > mnk; k--){
+                for(int k = 1, mxk = siz[v]; k <= mxk; k++){
                     d[u][j - k] = min(d[u][j - k], d[u][j] + d[v][siz[v] - k]);
                 }
                 d[u][j] = INF;
