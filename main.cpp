@@ -9,7 +9,7 @@ long long d[5005][5005];
 vector<int> g[5005];
 
 void read(int &x);
-void f(int u, int fa);
+void f(int u, int fa, bool tem = true);
 
 int main(){
     read(n);
@@ -22,10 +22,11 @@ int main(){
         g[u].push_back(v);
         g[v].push_back(u);
     }
-    memset(d, 0x3f, sizeof d);
-    for(int i = 0; i <= n; i++){
-        d[i][0] = 0;
-    }
+//    memset(d, 0x3f, sizeof d);
+//    for(int i = 0; i <= n; i++){
+//        d[i][0] = 0;
+//    }
+    f(1, 0, false);
     f(1, 0);
     printf("%lld", d[1][n-1]);
 }
@@ -45,35 +46,43 @@ void read(int &x){
     x = s * w;
 }
 
-void f(int u, int fa){
-    siz[u] = 1;
+void f(int u, int fa, bool tem){
+    if(tem){
+        for (int i=1;i<siz[u];i++) {
+            d[u][i] = INF;
+        }
+        d[u][siz[u] - 1] = 0;
+    }else {
+        siz[u] = 1;
+    }
     for(auto &i : g[u]){
         if(i != fa){
-            f(i, u);
-            siz[u] += siz[i];
+            f(i, u, tem);
+            if(!tem) {
+                siz[u] += siz[i];
+            }
         }
     }
+//    for (int i=1;i<siz[u];i++) {
+//        d[u][i] = INF;
+//    }
+//    d[u][siz[u] - 1] = 0;
+    if(!tem){
+        return ;
+    }
     if(siz[u] != 1) {
-        int sg = g[u].size()+(fa==0);
+        int sg = g[u].size();
         long long lastMx = 0;
-
-        for (int i = 0, mxi = (sg-(fa==0)); i < mxi; i++) {
+        for (int i = 0, mxi = sg; i < mxi; i++) {
             int &v = g[u][i];
-
-            //            if (v == fa) {
-            //                flag = true;
-            //                continue;
-            //            }
-            //            int nowP = (i + 1 - flag)%2;
-            //            dd[nowP][0] = 0;
-            //            for (int j = 1, mxj = siz[v] + lastMx; j < mxj; j++) {
-            //                for(int k = 0, mxk = min(siz[v], j+1); k < mxk; k++){
-            //                    dd[nowP][j] = min(dd[nowP][j], dd[nowP^1][j-k] + d[v][k]);
-            //                }
-            //            }
-            for (int j = siz[u] - lastMx - 1, mxj = siz[u] - i; j < mxj; j++) {
+            if(v == fa){
+                continue;
+            }
+            for (int j = siz[u] - lastMx - 1, mxj = siz[u] - i - 1; j <= mxj; j++) {
+//                j = siz - t
+//                siz - j = siz - siz + t = t
                 for(int k = siz[v], mnk = 0; k > mnk; k--){
-                    d[u][j + k] = min(d[u][j + k], d[u][j] + d[v][k]);
+                    d[u][j - k] = min(d[u][j - k], d[u][j] + d[v][siz[v] - k]);
                 }
                 d[u][j] = INF;
             }
@@ -84,7 +93,7 @@ void f(int u, int fa){
         }
 
         d[u][siz[u] - 1] = w[siz[u]];
-        for(int i = 1; i < siz[u]; i++){
+        for(int i = 0; i <= siz[u] - sg; i++){
             //            d[u][i] = min(dd[(sg - 1)%2][i], d[u][i]);
             d[u][siz[u]-1] = min(d[u][siz[u]-1], d[u][i] + w[siz[u]-i]);
         }
