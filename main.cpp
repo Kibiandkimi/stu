@@ -3,6 +3,7 @@
 //
 #include <bits/stdc++.h>
 using namespace std;
+const long long INF = 1e18;
 int n, w[5005], siz[5005];
 long long d[5005][5005];
 vector<int> g[5005];
@@ -54,30 +55,37 @@ void f(int u, int fa){
     }
     if(siz[u] != 1) {
         int sg = g[u].size()+(fa==0);
-        long long dd[2][siz[u]], lastMx = 0;
-        memset(dd, 0x3f, sizeof dd);
-        bool flag = false;
-        dd[0][0] = 0;
+        long long lastMx = 0;
 
         for (int i = 0, mxi = (sg-(fa==0)); i < mxi; i++) {
             int &v = g[u][i];
-            if (v == fa) {
-                flag = true;
-                continue;
-            }
-            int nowP = (i + 1 - flag)%2;
-            dd[nowP][0] = 0;
-            for (int j = 1, mxj = siz[v] + lastMx; j < mxj; j++) {
-                for(int k = 0, mxk = min(siz[v], j+1); k < mxk; k++){
-                    dd[nowP][j] = min(dd[nowP][j], dd[nowP^1][j-k] + d[v][k]);
+
+            //            if (v == fa) {
+            //                flag = true;
+            //                continue;
+            //            }
+            //            int nowP = (i + 1 - flag)%2;
+            //            dd[nowP][0] = 0;
+            //            for (int j = 1, mxj = siz[v] + lastMx; j < mxj; j++) {
+            //                for(int k = 0, mxk = min(siz[v], j+1); k < mxk; k++){
+            //                    dd[nowP][j] = min(dd[nowP][j], dd[nowP^1][j-k] + d[v][k]);
+            //                }
+            //            }
+            for (int j = siz[u] - lastMx - 1, mxj = siz[u] - i; j < mxj; j++) {
+                for(int k = siz[v], mnk = 0; k > mnk; k--){
+                    d[u][j + k] = min(d[u][j + k], d[u][j] + d[v][k]);
                 }
+                d[u][j] = INF;
             }
-            lastMx += (siz[v]-1);
+            lastMx += siz[v];
+            for(int j = siz[u] - i; j <= siz[u]-1; j++){
+                d[u][j] = INF;
+            }
         }
 
         d[u][siz[u] - 1] = w[siz[u]];
         for(int i = 1; i < siz[u]; i++){
-            d[u][i] = min(dd[(sg - 1)%2][i], d[u][i]);
+            //            d[u][i] = min(dd[(sg - 1)%2][i], d[u][i]);
             d[u][siz[u]-1] = min(d[u][siz[u]-1], d[u][i] + w[siz[u]-i]);
         }
     }
