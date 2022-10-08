@@ -2,10 +2,10 @@
 using namespace std;
 
 struct List{
-    int to;
-    List *nxt;
+    int to, nxt;
+//    int nxt;
 }edge[100005];
-List *head[100005];
+int head[100005];
 int edgeCnt;
 
 void read(int &x);
@@ -18,10 +18,10 @@ int main(){
     read(n), read(k);
 
 //    Is this necessary?
-    for(int i = 1; i <= n; i++){
-        head[i] = nullptr;
-        edge[i].nxt = nullptr;
-    }
+//    for(int i = 1; i <= n; i++){
+//        head[i] = nullptr;
+//        edge[i].nxt = nullptr;
+//    }
 
     for(int i = 1; i < n; i++){
         int u, v;
@@ -67,7 +67,9 @@ pair<int, int*> findMaxDep(int u){
 
 int f(int u, int *dep){
     int mxDot = u;
-    for(List *i = head[u]; i->nxt != nullptr; i = i->nxt){
+//    for(List *i = head[u]; i->nxt != nullptr; i = i->nxt){
+    for(int pos = head[u]; pos; pos = edge[pos].nxt){
+        List *i = &edge[pos];
         if(dep[i->to] == -1){
             dep[i->to] = dep[u] + 1;
             int tem = f(i->to, dep);
@@ -89,7 +91,9 @@ int* findReachableMaxDep(int u){
 
 void f(int u, int dep, int *mxDep){
     mxDep[u] = dep;
-    for(List *i = head[u]; i->nxt != nullptr; i - i->nxt){
+//    for(List *i = head[u]; i->nxt != nullptr; i - i->nxt){
+    for(int pos = head[u]; pos; pos = edge[pos].nxt){
+        List *i = &edge[pos];
         if(mxDep[i->to] == -1){
             f(i->to, dep+1, mxDep);
             mxDep[u] = max(mxDep[u], mxDep[i->to]);
@@ -99,7 +103,8 @@ void f(int u, int dep, int *mxDep){
 
 void addEdge(int u, int v){
     edge[++edgeCnt] = {v, head[u]};
-    head[u] = &edge[edgeCnt];
+    head[u] = edgeCnt;
+//    head[u] = &edge[edgeCnt];
 }
 
 void read(int &x){
