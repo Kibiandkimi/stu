@@ -25,7 +25,7 @@ public:
     int begin(int x) {
         return head[x];
     }
-    int next(int x) {
+    __attribute__((unused)) int next(int x) {
         return nxt[x];
     }
     int get(int x) {

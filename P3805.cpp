@@ -82,3 +82,50 @@ int main(){
     }
     printf("%d", ans);
 }
+
+namespace Second{
+    using namespace std;
+
+    int readStr(char *c);
+
+    int main(){
+        static char raw[24000005], str[46000005];
+        static int len = readStr(raw+1), d[46000005], ans = 0;
+        str[0] = '#';
+        for(int i = 1; i <= len; i++){
+            str[i*2] = raw[i];
+            str[i*2 - 1] = '*';
+        }
+        str[len*2+1] = '*';
+        len = len*2+1;
+        for(int i = 1; i <= len; i++){
+            static int mid = 0, r = 0;
+            if(i <= r){
+                d[i] = min(d[(mid<<1)-i], r-i+1);
+            }
+            while(str[i - d[i]] == str[i + d[i]] && i + d[i] <= len){
+                ++d[i];
+            }
+            if(d[i] + i > r){
+                r = d[i] + i - 1, mid = i;
+            }
+            if(d[i] > ans){
+                ans = d[i];
+            }
+        }
+        printf("%d", ans-1);
+    }
+
+    int readStr(char *c){
+        int tem = getchar();
+        while(tem < 'a' || 'z' < tem){
+            tem =getchar();
+        }
+        static int i = 0;
+        while('a' <= tem && tem <= 'z'){
+            c[i++] = (char)tem;
+            tem = getchar();
+        }
+        return i;
+    }
+}
