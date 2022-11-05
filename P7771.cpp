@@ -52,3 +52,77 @@ int main(){
         printf("%d ", t);
     }
 }
+
+namespace Second{
+    //
+    // Created by kibi on 2022/10/28.
+    //
+    using namespace std;
+
+    int n, m, in[100005], out[100005], nxt[100005];
+    vector<int> g[100005];
+    stack<int> sta;
+
+    void read(int &x);
+    void f(int u);
+
+    int main(){
+        read(n), read(m);
+        for(int i = 1; i <= m; i++){
+            static int u, v;
+            read(u), read(v);
+            g[u].emplace_back(v);
+            ++in[v];
+            ++out[u];
+        }
+        for(int i = 1; i <= n; i++){
+            sort(g[i].begin(), g[i].end());
+        }
+        bool flag = true;
+        static int tem1, tem2, st = 1;
+        for(int i = 1; i <= n; i++){
+            if(in[i] != out[i]){
+                flag = false;
+            }
+            if(in[i] - out[i] == 1){
+                ++tem1;
+            }
+            if(out[i] - in[i] == 1){
+                ++tem2;
+                st = i;
+            }
+        }
+        if((!flag) && (tem1!=1||tem2!=1)){
+            printf("No");
+            return 0;
+        }
+        f(st);
+        while(!sta.empty()){
+            printf("%d ", sta.top());
+            sta.pop();
+        }
+    }
+
+    void read(int &x){
+        int s = 0, w = 1, c = getchar();
+        while(c < '0' || '9' < c){
+            if(c == '-'){
+                w = -1;
+            }
+            c = getchar();
+        }
+        while('0' <= c && c <= '9'){
+            s = s * 10 + c - '0';
+            c = getchar();
+        }
+        x = s * w;
+    }
+
+    void f(int u){
+        for(int i = nxt[u], mxi = g[u].size(); i < mxi; i = nxt[u]){
+            nxt[u] = i+1;
+            f(g[u][i]);
+        }
+        sta.push(u);
+    }
+}

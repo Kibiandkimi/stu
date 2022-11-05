@@ -6,6 +6,19 @@
 #define STU_MYHEAD_H
 
 #include <bits/stdc++.h>
+
+void read(int &x){
+    int s = 0, w = 1, c = getchar();
+    while(c < '0' || '9' < c){
+        c = getchar();
+    }
+    while('0' <= c && c <= '9'){
+        s = s * 10 + c - '0';
+        c = getchar();
+    }
+    x = s * w;
+}
+
 const int Size = 1000005;
 class Graph {
     int head[Size / 2], nxt[Size], to[Size], tot;
@@ -30,7 +43,7 @@ public:
     int begin(int x) {
         return head[x];
     }
-    __attribute__((unused)) int next(int x) {
+    int next(int x) {
         return nxt[x];
     }
     int get(int x) {
