@@ -20,6 +20,7 @@ void read(int &x){
 }
 
 const int Size = 1000005;
+static const int MaxN = 500005;
 class Graph {
     int head[Size / 2], nxt[Size], to[Size], tot;
 
