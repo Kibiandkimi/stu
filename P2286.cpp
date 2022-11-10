@@ -14,18 +14,18 @@ mt19937 rnd(random_device{}());
 class FhqTreap {
     static const int Size = 80005;
     int siz[Size], ls[Size], rs[Size], cnt;
-    unsigned int val[Size], rnk[Size];
+    long long val[Size], rnk[Size];
     void updSiz(int u){
         siz[u] = siz[ls[u]] + siz[rs[u]] + 1;
     }
 public:
     int root;
-    int newNode(unsigned int x){
+    int newNode(long long x){
         ++cnt;
         siz[cnt] = 1, val[cnt] = x, rnk[cnt] = rnd();
         return cnt;
     }
-    void split(int &x, int &y, unsigned int k, int pos){
+    void split(int &x, int &y, long long k, int pos){
         if(!pos){
             x = y = 0;
         }else{
@@ -53,9 +53,9 @@ public:
             return y;
         }
     }
-    unsigned int del(unsigned int k){
+    long long del(long long k){
         static int x, y, now, a, b, c, tem;
-        static unsigned int res;
+        static long long res;
         split(a, b, k-1, root);
         now = a;
         while(rs[now]){
@@ -81,30 +81,29 @@ public:
 };
 
 void read(int &x);
-void read(unsigned int &x);
+void read(long long &x);
 
 int main(){
-    static const unsigned int mod = 1000000;
+    static const long long mod = 1000000;
     static int n;
-    static unsigned int ans;
+    static long long ans;
     static FhqTreap tr;
     read(n);
     while(n--){
         static int opt, now;
-        static unsigned int x;
+        static long long x;
         read(opt), read(x);
         opt = opt?1:-1;
         if(now>=0&&opt>0 || now<=0&&opt<0){
-            now += opt;
             static int a, b;
             tr.split(a, b, x, tr.root);
             tr.root = tr.merge(tr.merge(a, tr.newNode(x)), b);
         }else{
-            now += opt;
-            ans = (ans + tr.del(x))%mod;
+            ans = (int)((long long)ans + tr.del(x))%mod;
         }
+        now += opt;
     }
-    printf("%u", ans);
+    printf("%lld", ans);
 }
 
 void read(int &x){
@@ -122,8 +121,8 @@ void read(int &x){
     x = s * w;
 }
 
-void read(unsigned int &x){
-    unsigned int s = 0, c = getchar();
+void read(long long &x){
+    long long s = 0, c = getchar();
     while(c < '0' || '9' < c){
         c = getchar();
     }
