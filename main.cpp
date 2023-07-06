@@ -6,13 +6,13 @@ const int N = 50000, M = 50000;
 void read(int &x);
 
 class SeTree{
-    int val[N*4+5], ls[N*4+5], rs[N*4+5], l[N*4+5], r[N*4+5], valL[N*4+5], valR[N*4+5];
+    int val[N*4+5], l[N*4+5], r[N*4+5], valL[N*4+5], valR[N*4+5];
     bool flag_in[N*4+5], flag_out[N*4+5];
 
     void update(int u) {
-        val[u] = max(max(val[ls[u]], val[rs[u]]), valR[ls[u]] + valL[rs[u]]);
-        valL[u] = valL[ls[u]] == val[ls[u]] ? val[ls[u]] + valL[rs[u]] : valL[ls[u]];
-        valR[u] = valR[rs[u]] == val[rs[u]] ? val[rs[u]] + valR[ls[u]] : valR[rs[u]];
+        val[u] = max(max(val[u*2], val[u*2+1]), valR[u*2] + valL[u*2+1]);
+        valL[u] = valL[u*2] == r[u*2]-l[u*2]+1 ? val[u*2] + valL[u*2+1] : valL[u*2];
+        valR[u] = valR[u*2+1] == r[u*2+1]-l[u*2+1]+1 ? val[u*2+1] + valR[u*2] : valR[u*2+1];
     }
 
     void build(int _l, int _r, int u){
@@ -22,25 +22,25 @@ class SeTree{
             return;
         }
         int mid = (_l + _r) / 2;
-        ls[u] = u*2, rs[u] = u*2+1;
-        build(_l, mid, ls[u]);
-        build(mid + 1, _r, rs[u]);
+//        u*2 = u*2, u*2+1 = u*2+1;
+        build(_l, mid, u*2);
+        build(mid + 1, _r, u*2+1);
         update(u);
     }
 
     void push_down(int u){
         if(flag_in[u]){
             flag_in[u] = false;
-            flag_in[ls[u]] = flag_in[rs[u]] = true;
-            flag_out[ls[u]] = flag_out[rs[u]] = false;
-            val[ls[u]] = val[rs[u]] = valL[ls[u]] = valL[rs[u]] = valR[ls[u]] = valR[rs[u]] = 0;
+            flag_in[u*2] = flag_in[u*2+1] = true;
+            flag_out[u*2] = flag_out[u*2+1] = false;
+            val[u*2] = val[u*2+1] = valL[u*2] = valL[u*2+1] = valR[u*2] = valR[u*2+1] = 0;
         }
         if(flag_out[u]){
             flag_out[u] = false;
-            flag_out[ls[u]] = flag_out[rs[u]] = true;
-            flag_in[ls[u]] = flag_in[rs[u]] = false;
-            val[ls[u]] = valL[ls[u]] = valR[ls[u]] = r[ls[u]] - l[ls[u]] + 1;
-            val[rs[u]] = valL[rs[u]] = valR[rs[u]] = r[rs[u]] - l[rs[u]] + 1;
+            flag_out[u*2] = flag_out[u*2+1] = true;
+            flag_in[u*2] = flag_in[u*2+1] = false;
+            val[u*2] = valL[u*2] = valR[u*2] = r[u*2] - l[u*2] + 1;
+            val[u*2+1] = valL[u*2+1] = valR[u*2+1] = r[u*2+1] - l[u*2+1] + 1;
         }
     }
 
@@ -48,20 +48,23 @@ class SeTree{
         if(val[u] < x){
             return 0;
         }
+        if(valL[u] >= x){
+            return l[u];
+        }
         push_down(u);
-        int t = query(ls[u], x);
+        int t = query(u*2, x);
         if(t){
             return t;
         }
-        if(valR[ls[u]] && valR[ls[u]] + valL[rs[u]] >= x){
-            return r[ls[u]] - valR[ls[u]] + 1;
+        if(valR[u*2] && valR[u*2] + valL[u*2+1] >= x){
+            return r[u*2] - valR[u*2] + 1;
         }
-        t = query(rs[u], x);
+        t = query(u*2+1, x);
         return t;
     }
 
 public:
-    SeTree(int size){
+    explicit SeTree(int size){
         build(1, size, 1);
     }
 
@@ -73,11 +76,11 @@ public:
             return ;
         }
         push_down(u);
-        if(_l <= r[ls[u]]){
-            check_in(_l, _r, ls[u]);
+        if(_l <= r[u*2]){
+            check_in(_l, _r, u*2);
         }
-        if(_r >= l[rs[u]]){
-            check_in(_l, _r, rs[u]);
+        if(_r >= l[u*2+1]){
+            check_in(_l, _r, u*2+1);
         }
         update(u);
     }
@@ -90,11 +93,11 @@ public:
             return ;
         }
         push_down(u);
-        if(_l <= r[ls[u]]){
-            check_out(_l ,_r, ls[u]);
+        if(_l <= r[u*2]){
+            check_out(_l ,_r, u*2);
         }
-        if(_r >= l[rs[u]]){
-            check_out(_l, _r, rs[u]);
+        if(_r >= l[u*2+1]){
+            check_out(_l, _r, u*2+1);
         }
         update(u);
     }
