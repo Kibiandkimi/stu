@@ -92,3 +92,128 @@ int main(){
     }
     f(root);
 }
+
+
+
+/* 2023 - 7 - 5
+ *
+#include <bits/stdc++.h>
+using namespace std;
+
+mt19937 rnd(random_device{}());
+const int N = 100000, M = 100000;
+
+void read(int &x);
+
+class fhq_treap{
+    int val[N+5], rnk[N+5], ls[N+5], rs[N+5], siz[N+5], size;
+    bool flag[N+5];
+    void update(int u){
+        siz[u] = siz[ls[u]] + siz[rs[u]] + 1;
+    }
+    void push_down(int u){
+        if(flag[u]){
+            swap(ls[u], rs[u]);
+            flag[ls[u]] ^= 1;
+            flag[rs[u]] ^= 1;
+            flag[u] = false;
+        }
+    }
+public:
+    int new_node(int v){
+        val[++size] = v;
+        rnk[size] = (int)rnd();
+        siz[size] = 1;
+        return size;
+    }
+
+    void split(int &x, int &y, int k, int rt){
+        if(!rt){
+            x = y = 0;
+            return ;
+        }
+        push_down(rt);
+        if(siz[ls[rt]] >= k){
+            y = rt;
+            split(x, ls[rt], k, ls[rt]);
+            update(y);
+        }else{
+            x = rt;
+            split(rs[rt], y, k-siz[ls[rt]]-1, rs[rt]);
+            update(x);
+        }
+    }
+
+    int merge(int x, int y){
+        if(!(x&&y)){
+            return x+y;
+        }
+        if(rnk[x] < rnk[y]){
+            push_down(x);
+            rs[x] = merge(rs[x], y);
+            update(x);
+            return x;
+        }else{
+            push_down(y);
+            ls[y] = merge(x, ls[y]);
+            update(y);
+            return y;
+        }
+    }
+
+    void reverse(int u){
+        flag[u] ^= 1;
+    }
+
+    void work_out(int u){
+        push_down(u);
+        if(siz[ls[u]]){
+            work_out(ls[u]);
+        }
+        printf("%d ", val[u]);
+        if(siz[rs[u]]){
+            work_out(rs[u]);
+        }
+    }
+};
+
+int main(){
+    int n, m, root;
+    static fhq_treap tree;
+
+    read(n), read(m);
+
+    root = 0;
+    for(int i = 1; i <= n; i++){
+        root = tree.merge(root, tree.new_node(i));
+    }
+
+    while(m--){
+        int l, r;
+        read(l), read(r);
+        int x, y, z;
+        tree.split(x, y, l-1, root);
+        tree.split(y, z, r-l+1, y);
+        tree.reverse(y);
+        root = tree.merge(x, tree.merge(y, z));
+    }
+
+    tree.work_out(root);
+}
+
+void read(int &x){
+    int s = 0, w = 1, c = getchar();
+    while(c < '0' || '9' < c){
+        if(c == '-'){
+            w = -1;
+        }
+        c = getchar();
+    }
+    while('0' <= c && c <= '9'){
+        s = s * 10 + c - '0';
+        c = getchar();
+    }
+    x = s * w;
+}
+
+ * */
