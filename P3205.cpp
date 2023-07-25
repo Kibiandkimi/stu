@@ -47,3 +47,62 @@ void read(int &x){
     }
     x = s*w;
 }
+
+
+// 2023/7/24
+
+/*
+#include <bits/stdc++.h>
+using namespace std;
+
+const int N = 1000, Mod = 19650827;
+
+void read(int&);
+
+int main(){
+    int n;
+    read(n);
+    static int a[N+5];
+    for(int i = 1; i <= n; i++){
+        read(a[i]);
+    }
+    static int f[N+5][N+5][2]; // 0:l 1:r
+
+    for(int i = 1; i <= n; i++){
+        f[i][i][0] = 1;
+    }
+    for(int len = 2; len <= n; len++){
+        for(int i = 1; i <= n-len+1; i++){
+            int j = i+len-1;
+            if(a[i] < a[i+1]){
+                f[i][j][0] = (f[i][j][0] + f[i+1][j][0]) % Mod;
+            }
+            if(a[i] < a[j]){
+                f[i][j][0] = (f[i][j][0] + f[i+1][j][1]) % Mod;
+            }
+            if(a[j] > a[i]){
+                f[i][j][1] = (f[i][j][1] + f[i][j-1][0]) % Mod;
+            }
+            if(a[j] > a[j-1]){
+                f[i][j][1] = (f[i][j][1] + f[i][j-1][1]) % Mod;
+            }
+        }
+    }
+    printf("%d\n", (f[1][n][0] + f[1][n][1]) % Mod);
+}
+
+void read(int &x){
+    int s = 0, w = 1, c = getchar();
+    while(c < '0' || '9' < c){
+        if(c == '-'){
+            w = -1;
+        }
+        c = getchar();
+    }
+    while('0' <= c && c <= '9'){
+        s = s * 10 + c - '0';
+        c = getchar();
+    }
+    x = s * w;
+}
+*/

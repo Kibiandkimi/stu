@@ -19,10 +19,26 @@ void read(int &x){
     x = s * w;
 }
 
+void read(long long &x){
+    long long s = 0, w = 1, c = getchar();
+    while(c < '0' || '9' < c){
+        if(c == '-'){
+            w = -1;
+        }
+        c = getchar();
+    }
+    while('0' <= c && c <= '9'){
+        s = s * 10 + c - '0';
+        c = getchar();
+    }
+    x = s * w;
+}
+
 const int Size = 1000005;
 static const int MaxN = 500005;
 class Graph {
     int head[Size / 2], nxt[Size], to[Size], tot;
+//    Size / 2 ??
 
 public:
     /*

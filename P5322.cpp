@@ -69,3 +69,63 @@ void read(int &x){
 bool cmp(int a, int b){
     return a < b;
 }
+
+// 2023/7/22
+
+/*
+ * #include <bits/stdc++.h>
+using namespace std;
+
+const int S = 100, N = 100, M = 20000;
+
+void read(int&);
+
+int main(){
+
+    int s, n, m;
+    static int f[N+5][M+5], w[N+5][S+5];
+    read(s), read(n), read(m);
+
+    for(int i = 1; i <= s; i++){
+        for(int j = 1; j <= n; j++){
+            read(w[j][i]);
+        }
+    }
+
+    for(int i = 1; i <= n; i++){
+        sort(w[i]+1, w[i]+1+s, [&](int a, int b){return a < b;});
+    }
+
+    for(int i = 1; i <= n; i++){
+        for(int j = 1; j <= m; j++){
+            f[i][j] = f[i-1][j];
+            for(int k = 1; k <= s; k++){
+                if(j - 2 * w[i][k] - 1 < 0){
+                    break;
+                }
+                f[i][j] = max(f[i][j], f[i-1][j - w[i][k] * 2 - 1] + k * i);
+            }
+            //			printf("%d ", f[i][j]);
+        }
+        //		printf("\n");
+    }
+
+    printf("%d\n", f[n][m]);
+}
+
+void read(int &x){
+    int s = 0, w = 1, c = getchar();
+    while(c < '0' || '9' < c){
+        if(c == '-'){
+            w = -1;
+        }
+        c = getchar();
+    }
+    while('0' <= c && c <= '9'){
+        s = s * 10 + c - '0';
+        c = getchar();
+    }
+    x = s * w;
+}
+ *
+ * */

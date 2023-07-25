@@ -115,3 +115,60 @@ int main(){
     }
     printf("%d", ans);
 }*/
+
+
+// 2023/7/20
+
+/*
+ * #include <bits/stdc++.h>
+using namespace std;
+
+const int N = 100;
+
+void read(int&);
+
+int main(){
+    int n;
+    read(n);
+    int a[N + 5], f1[N + 5] = {0}, f2[N + 5] = {0};
+    for(int i = 1; i <= n; i++){
+        read(a[i]);
+
+    }
+    int ans = n;
+    for(int i = 1; i <= n; i++){
+        f1[i] = 1;
+        f2[n-i+1] = 1;
+        for(int j = i-1; j >= 1; j--){
+            if(a[j]<a[i]){
+                f1[i] = max(f1[i], f1[j]+1);
+            }
+            if(a[n-j+1] < a[n-i+1]){
+                f2[n-i+1] = max(f2[n-i+1], f2[n-j+1]+1);
+            }
+        }
+
+    }
+
+    for(int i = 1; i <= n; i++){
+        ans = n-max(n-ans, f1[i]+f2[i]-1);
+    }
+
+    printf("%d\n", ans);
+}
+
+void read(int &x){
+    int s = 0, w = 1, c = getchar();
+    while(c < '0' || '9' < c){
+        if(c == '-'){
+            w = -1;
+        }
+        c = getchar();
+    }
+    while('0' <= c && c <= '9'){
+        s = s * 10 + c - '0';
+        c= getchar();
+    }
+    x = s * w;
+}
+ * */
