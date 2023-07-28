@@ -5,23 +5,31 @@ const int N = 30;
 
 class House{
 public:
-    long long x, y, g, w;
+    unsigned long long x, y, g, w;
 };
 
 static House house[N*N+5];
 
-void read(long long&);
+void read(unsigned long long&);
 
-bool cmp(long long a, long long b){
+bool cmp(unsigned long long a, unsigned long long b){
     return a > b;
 }
 
-long long ans;
-long long pw[75];
+unsigned long long abs(unsigned long long a, unsigned long long b){
+    if(a > b){
+        return a-b;
+    }else{
+        return b-a;
+    }
+}
+
+unsigned long long ans;
+unsigned long long pw[75];
 
 int main(){
 
-    long long c, n, m, p, t;
+    unsigned long long c, n, m, p, t;
     read(c), read(n), read(m), read(p), read(t);
     if(t == 0){
         printf("0\n");
@@ -36,27 +44,27 @@ int main(){
     static bool map[N+5][N+5];
 
     for(int i = 1; i <= c; i++){
-        long long _x, _y, g, w;
+        unsigned long long _x, _y, g, w;
         read(_x), read(_y), read(g), read(w);
         house[i] = {_x, _y, g, w};
         map[_x][_y] = true;
     }
 
-    long long cnt;
+    unsigned long long cnt;
     for(int i = 1; i <= n; i++){
         for(int j = 1; j <= n; j++){
             if(map[i][j]){
                 continue;
             }
-            static long long val[N*N*2+5];
+            static unsigned long long val[N*N*2+5];
             cnt = 0;
             for(int k = 1; k <= c; k++){
-                static long long dis;
-                dis = abs(house[k].x-i) + abs(house[k].y-j);
+                static unsigned long long dis;
+                dis = abs(house[k].x, i) + abs(house[k].y, j);
                 if(p >= house[k].w + pw[dis]){
-                    static long long mn;
-                    mn = min((p - pw[dis])/house[k].w, house[k].g);
-                    static long long num;
+                    static unsigned long long mn;
+                    mn = (house[k].w == 0 ? house[k].g : min((p - pw[dis])/house[k].w, house[k].g));
+                    static unsigned long long num;
                     num = min(mn, m);
                     val[++cnt] = num;
                     if(num < house[k].g){
@@ -66,10 +74,10 @@ int main(){
                 }
             }
             if(cnt){
-                static long long res;
+                static unsigned long long res;
                 res = 0;
                 sort(val+1, val+1+cnt, cmp);
-                long long mxk = min(t, cnt);
+                unsigned long long mxk = min(t, cnt);
                 for(int k = 1; k <= mxk; k++){
                     res += val[k];
                 }
@@ -78,12 +86,12 @@ int main(){
         }
     }
 
-    printf("%lld\n", ans);
+    printf("%llu\n", ans);
 
 }
 
-void read(long long &_x){
-    long long s = 0, w = 1, c = getchar();
+void read(unsigned long long &_x){
+    unsigned long long s = 0, w = 1, c = getchar();
     while(c < '0' || '9' < c){
         if(c == '-'){
             w = -1;
@@ -91,7 +99,7 @@ void read(long long &_x){
         c = getchar();
     }
     while('0' <= c && c <= '9'){
-        s = s * 10 + c - '0';
+        s = s * 10 - '0' + c;
         c = getchar();
     }
     _x = s * w;
