@@ -11,7 +11,7 @@ void read(int&);
 int main(){
     static char s[N+5];
     int c = getchar(), cnt = 0;
-    while(c != '\n'){
+    while(c != '\r'){
         s[++cnt] = char(c);
         c = getchar();
     }
