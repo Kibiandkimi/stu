@@ -1,3 +1,6 @@
 *build*
 io
 .vscode
+.idea
+sol
+temp.cpp
