@@ -169,3 +169,125 @@ int main(){
     return 0;
 }
  */
+
+// 2023/8/1
+/*
+
+#include <bits/stdc++.h>
+using namespace std;
+
+const int N = 100000;
+
+template<typename Num>
+void read(Num&);
+
+int main(){
+
+    class SegTree{
+        int l[4 * N + 5]{}, r[4 * N + 5]{}, ls[4 * N + 5]{}, rs[4 * N + 5]{};
+        long long sum[4 * N + 5]{}, tag[4 * N + 5]{};
+
+        void build(int u, int _l, int _r, const long long *data){
+            l[u] = _l, r[u] = _r;
+            if(_l == _r){
+                sum[u] = data[_l];
+                return;
+            }
+            int mid = (_l+_r)/2;
+            ls[u] = u*2, rs[u] = u*2+1;
+            build(ls[u], _l, mid, data);
+            build(rs[u], mid+1, _r, data);
+            sum[u] = sum[ls[u]] + sum[rs[u]];
+        }
+
+        void push_down(int u){
+            if(tag[u]){
+                tag[ls[u]] += tag[u], sum[ls[u]] += tag[u] * (r[ls[u]]-l[ls[u]]+1);
+                tag[rs[u]] += tag[u], sum[rs[u]] += tag[u] * (r[rs[u]]-l[rs[u]]+1);
+                tag[u] = 0;
+            }
+        }
+
+    public:
+
+        SegTree(int size, const long long *data){
+            build(1, 1, size, data);
+        }
+
+        void add(const int _l, const int _r, const long long x, int u = 1){
+            if(_l <= l[u] && r[u] <= _r){
+                tag[u] += x;
+                sum[u] += (r[u]-l[u]+1)*x;
+                return ;
+            }
+            push_down(u);
+            if(_l <= r[ls[u]]){
+                add(_l, _r, x, ls[u]);
+            }
+            if(_r >= l[rs[u]]){
+                add(_l, _r, x, rs[u]);
+            }
+            sum[u] = sum[ls[u]] + sum[rs[u]];
+        }
+
+        long long query(const int _l, const int _r, int u = 1){
+            if(_l <= l[u] && r[u] <= _r){
+                return sum[u];
+            }
+            push_down(u);
+            long long res = 0;
+            if(_l <= r[ls[u]]){
+                res += query(_l, _r, ls[u]);
+            }
+            if(_r >= l[rs[u]]){
+                res += query(_l, _r, rs[u]);
+            }
+            return res;
+        }
+
+    };
+
+    int n, m;
+
+    read(n), read(m);
+
+    long long raw[N + 5];
+
+    for(int i = 1; i <= n; i++){
+        read(raw[i]);
+    }
+
+    static SegTree tree(n, raw);
+
+    for(int i = 1; i <= m; i++){
+        int opt, x, y;
+        long long k;
+        read(opt), read(x), read(y);
+        if(opt == 1){
+            read(k);
+            tree.add(x, y, k);
+        }else{
+            printf("%lld\n", tree.query(x, y));
+        }
+
+    }
+
+}
+
+template<typename Num>
+void read(Num &x){
+    Num s = 0, w = 1, c = getchar();
+    while(c < '0' || '9' < c){
+        if(c == '-'){
+            w = -1;
+        }
+        c = getchar();
+    }
+    while('0' <= c && c <= '9'){
+        s = s * 10 + c -'0';
+        c = getchar();
+    }
+    x = s * w;
+}
+
+*/

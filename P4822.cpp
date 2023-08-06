@@ -66,3 +66,243 @@ int main(){
     }
     printf("%d", ans);
 }
+
+/*
+
+#include <bits/stdc++.h>
+using namespace std;
+
+const int N = 50, M = 1000, K = 50;
+
+void read(int&);
+
+int main(){
+    
+    class Graph{
+        int head[N + 5], nxt[2 * M + 5], to[2 * M + 5], time[M + 5], cnt;
+    
+    public:
+
+        void add_edge(int u, int v, int w){
+            to[++cnt] = v;
+            nxt[cnt] = head[u];
+            head[u] = cnt;
+
+            to[++cnt] = u;
+            nxt[cnt] = head[v];
+            head[v] = cnt;
+
+            time[cnt/2] = w;
+        }
+
+        int begin(int x){
+            return head[x];
+        }
+
+        int next(int x){
+            return nxt[x];
+        }
+
+        int get(int x){
+            return to[x];
+        }
+
+        int get_time(int x){
+            return time[x/2+x%2];
+        }
+    };
+
+    static Graph graph;
+
+    int n, m, k;
+    read(n), read(m), read(k);
+
+    for(int i = 1; i <= m; i++){
+        int u, v, w;
+        read(u), read(v), read(w);
+        graph.add_edge(u, v, w);
+    }
+
+    int f[N + 5][K + 5];
+    bool vis[N + 5][K + 5];
+
+    memset(f, 0x3f, sizeof f);
+
+    f[1][0] = 0;
+
+    queue<pair<int, int> > q; // first:id second: K-times
+    q.emplace(1, 0);
+
+    while(!q.empty()){
+        auto data = q.front();
+        q.pop();
+
+        auto [u, _k] = data;
+
+        for(int i = graph.begin(u); i; i = graph.next(i)){
+            int v = graph.get(i), w = graph.get_time(i);
+
+            if(f[v][_k] > f[u][_k] + w){
+                f[v][_k] = f[u][_k] + w;
+                if(!vis[v][_k]){
+                    q.emplace(v, _k);
+                    vis[v][_k] = true;
+                }
+            }
+
+            if( _k < k && f[v][_k+1] > f[u][_k] + w/2 ){
+                f[v][_k+1] = f[u][_k] + w/2;
+                if(!vis[v][_k+1]){
+                    q.emplace(v, _k+1);
+                    vis[v][_k] = true;
+                }
+            }
+        }
+    }
+
+    int ans = 1e9;
+
+    for(int i = 0; i <= k; i++){
+        ans = min(ans, f[n][i]);
+    }
+
+    printf("%d\n", ans);
+
+}
+
+void read(int &x){
+    int s = 0, w = 1, c = getchar();
+    while(c < '0' || '9' < c){
+        if(c == '-'){
+            w = -1;
+        }
+        c = getchar();
+    }
+    while('0' <= c && c <= '9'){
+        s = s * 10 + c - '0';
+        c = getchar();
+    }
+    x = s * w;
+}
+
+*/
+
+/*
+
+#include <bits/stdc++.h>
+using namespace std;
+
+const int N = 50, M = 1000, K = 50;
+
+void read(int&);
+
+int main(){
+    
+    class Graph{
+        int head[N + 5], nxt[2 * M + 5], to[2 * M + 5], time[M + 5], cnt;
+    
+    public:
+
+        void add_edge(int u, int v, int w){
+            to[++cnt] = v;
+            nxt[cnt] = head[u];
+            head[u] = cnt;
+
+            to[++cnt] = u;
+            nxt[cnt] = head[v];
+            head[v] = cnt;
+
+            time[cnt/2] = w;
+        }
+
+        int begin(int x){
+            return head[x];
+        }
+
+        int next(int x){
+            return nxt[x];
+        }
+
+        int get(int x){
+            return to[x];
+        }
+
+        int get_time(int x){
+            return time[x/2+x%2];
+        }
+    };
+
+    static Graph graph;
+
+    int n, m, k;
+    read(n), read(m), read(k);
+
+    for(int i = 1; i <= m; i++){
+        int u, v, w;
+        read(u), read(v), read(w);
+        graph.add_edge(u, v, w);
+    }
+
+    int f[N + 5][K + 5];
+    bool vis[N + 5][K + 5];
+
+    memset(f, 0x3f, sizeof f);
+
+    f[1][0] = 0;
+
+    queue<pair<int, int> > q; // first:id second: K-times
+    q.emplace(1, 0);
+
+    while(!q.empty()){
+        auto data = q.front();
+        q.pop();
+
+        auto [u, _k] = data;
+
+        for(int i = graph.begin(u); i; i = graph.next(i)){
+            int v = graph.get(i), w = graph.get_time(i);
+
+            if(f[v][_k] > f[u][_k] + w){
+                f[v][_k] = f[u][_k] + w;
+                if(!vis[v][_k]){
+                    q.emplace(v, _k);
+                    vis[v][_k] = true;
+                }
+            }
+
+            if( _k < k && f[v][_k+1] > f[u][_k] + w/2 ){
+                f[v][_k+1] = f[u][_k] + w/2;
+                if(!vis[v][_k+1]){
+                    q.emplace(v, _k+1);
+                    vis[v][_k] = true;
+                }
+            }
+        }
+    }
+
+    int ans = 1e9;
+
+    for(int i = 0; i <= k; i++){
+        ans = min(ans, f[n][i]);
+    }
+
+    printf("%d\n", ans);
+
+}
+
+void read(int &x){
+    int s = 0, w = 1, c = getchar();
+    while(c < '0' || '9' < c){
+        if(c == '-'){
+            w = -1;
+        }
+        c = getchar();
+    }
+    while('0' <= c && c <= '9'){
+        s = s * 10 + c - '0';
+        c = getchar();
+    }
+    x = s * w;
+}
+
+*/

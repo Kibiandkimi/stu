@@ -1,0 +1,27 @@
+A
+
+```
+<>;print/y.* y.*ng z/?Yes:No,$/for<>
+```
+
+B
+
+```
+f[1<<22],n,k,r;main(x){for(;~scanf("%d",&x);n?f[f[x+n]++]++:(n=k,k=x));for(x=n;x--;f[x]+=f[x+1]);for(;x<n;r+=f[f[++x+n]+k]<=k);printf(r>n?"pigstd":"%d",r);}
+```
+
+C
+
+```
+#import<iostream>
+using namespace std;long n,i,j,l,r,s['AͶ'][21],p['六'],o=998244353,x,y,A;main(){for(cin>>n;cin>>*s[++i];p[i]=*s[i]+p[i-1]);for(;j<20;j++)for(i=n;i;)s[i--][j+1]=min(s[i][j],s[i+(1<<j)][j]);for(x=p[n]%o,A=x++*x/2%o;i++<n;A=(A+(-o/3*(y+x)%o*--x%o-y)*(--l-i)%o*(r-i+1)+(p[r]-p[i-1])%o*y%o*(i-l))%o)for(x=p[l=r=i]-p[i-1],j=20;~j;l-=(l>>j&&s[l-(1<<j)][j]>x)<<j,r+=(s[r+1][j]>=x)<<j--)y=x*(x-1)/2%o;cout<<A;}
+```
+
+D
+
+```
+#import<bits/stdc++.h>
+#define P.insert
+#define J int
+using namespace std;J a['Ñ'],b['Ñ'],q['Ñ'],n,R,i,t=2,s,z;void Q(J x){cout<<"? "<<x<<" "<<i<<endl;cin>>z;}set<J>e['Ñ'];void D(J r){for(J y:e[r])D(y),b[r]=max(b[r],b[y]+1);e[r]=e[n+1];}main(){cin>>R>>n;for(i=n;i;e[a[i]=z]P(i--))Q(1);for(D(0);i<n;)b[++i]<b[R]?:R=i;for(;i;)e[i!=R]P(i--);for(b[b[q[1]=1]=q[2]=R]=1;t>s++;)for(J y:e[R=q[s]])y^1?Q(!a[R]^!a[i=y]?b[R]:R),z^R?e[z]P(y),0:b[q[++t]=y]=R:0;for(puts("!");n>1;)printf("%d %d\n",n--,b[n]);}
+  ```

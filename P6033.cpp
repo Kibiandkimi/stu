@@ -69,3 +69,65 @@ int main(){
     }
     printf("%lld", ans);
 }
+
+/*
+#include <bits/stdc++.h>
+using namespace std;
+
+const int N = 10000000, Max = 100000;
+
+void read(int&);
+
+int main(){
+    static int bucket[Max+5];
+    static queue<long long> q1, q2;
+
+    int n;
+    read(n);
+
+    for(int i = 1; i <= n; i++){
+        int t;
+        read(t);
+        bucket[t]++;
+    }
+    for(int i = 1; i <= Max+1; i++){
+        while(bucket[i]--) {
+            q1.push(i);
+        }
+    }
+    long long ans = 0;
+    for(int t = 1; t < n; t++){
+        long long v[2];
+        for(long long & i : v){
+            if(q1.empty()){
+                i = q2.front();
+                q2.pop();
+            }else if(q2.empty()){
+                i = q1.front();
+                q1.pop();
+            }else{
+                i = min(q1.front(), q2.front());
+                i == q1.front() ? q1.pop() : q2.pop();
+            }
+        }
+        ans += v[0] + v[1];
+        q2.push(v[0] + v[1]);
+    }
+    printf("%lld\n", ans);
+}
+
+void read(int &x){
+    int s = 0, w = 1, c = getchar();
+    while(c < '0' || '9' < c){
+        if(c == '-'){
+            w = -1;
+        }
+        c = getchar();
+    }
+    while('0' <= c && c <= '9'){
+        s = s * 10 + c - '0';
+        c = getchar();
+    }
+    x = s * w;
+}
+ * */

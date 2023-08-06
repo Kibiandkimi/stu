@@ -184,3 +184,425 @@ void read(int &x) {
     }
     x = s * w;
 }
+
+/*
+
+#include <bits/stdc++.h>
+using namespace std;
+
+const int N = 300000, M = 300000;
+
+void read(int&);
+
+class Func{
+public:
+    template <typename MyTuple>
+    static void dfs(int u, int fa, MyTuple data){
+
+        static int up_bucket[2 * N + 5], down_bucket[2 * N + 5];
+        static auto [w, s, t, dis, begin, ans, dep, end_trail, lca_trail, graph] = data;
+
+        int up_pre = up_bucket[w[u] + dep[u]], down_pre = down_bucket[w[u] - dep[u] + N];
+
+        for(int i = graph->begin(u); i; i = graph->next(i)){
+            int v = graph->get(i);
+            if(v == fa){
+                continue;
+            }
+            dfs(v, u, data);
+        }
+
+        up_bucket[dep[u]] += begin[u];
+
+        for(int i = end_trail->begin(u); i; i = end_trail->next(i)){
+            int v = end_trail->get(i);
+            down_bucket[dis[v]-dep[t[v]]+N]++;
+        }
+
+        ans[u] += up_bucket[w[u] + dep[u]] - up_pre + down_bucket[w[u]-dep[u]+N] - down_pre;
+
+        for(int i = lca_trail->begin(u); i; i = lca_trail->next(i)){
+            int v = lca_trail->get(i);
+            up_bucket[dep[s[v]]]--;
+            down_bucket[dis[v]-dep[t[v]]+N]--;
+        }
+    };
+
+};
+
+int main(){
+
+    class Graph{
+        int head[N + 5], nxt[2 * N + 5], to[2 * N + 5], cnt;
+    public:
+
+        class Lca{
+            int fo[N + 5][20]{}, dep[N + 5]{};
+            Graph &graph;
+
+            void dfs(int u, int fa){
+                static int *head = graph.head, *nxt = graph.nxt, *to = graph.to;
+                fo[u][0] = fa;
+                dep[u] = dep[fa] + 1;
+                for(int i = 1; i < 20; i++){
+                    fo[u][i] = fo[fo[u][i-1]][i-1];
+                }
+                for(int i = head[u]; i; i = nxt[i]){
+                    int v = to[i];
+                    if(v != fa){
+                        dfs(v, u);
+                    }
+                }
+            }
+
+        public:
+            explicit Lca(Graph &graph, int rt = 1) : graph(graph) {
+                dfs(rt, 0);
+            }
+
+            int lca(int x, int y){
+                if(dep[x] > dep[y]){
+                    swap(x, y);
+                }
+
+                for(int i = 19; i >= 0; i--){
+                    if(dep[fo[y][i]] >= dep[x]){
+                        y = fo[y][i];
+                    }
+                }
+
+                if(y == x){
+                    return x;
+                }
+
+                for(int i = 19; i >= 0; i--){
+                    if(fo[x][i] != fo[y][i]){
+                        x = fo[x][i];
+                        y = fo[y][i];
+                    }
+                }
+
+                return fo[x][0];
+            }
+
+            int get_dis(int u, int v, int _lca = -1){
+                if(_lca == -1){
+                    _lca = lca(u, v);
+                }
+                return dep[u] + dep[v] - 2 * dep[_lca];
+            }
+
+            int* get_dep_array(){
+                return dep;
+            }
+        };
+
+        void add_edge(int u, int v, bool flag = false){
+            to[++cnt] = v;
+            nxt[cnt] = head[u];
+            head[u] = cnt;
+
+            if(!flag){
+                return;
+            }
+
+            to[++cnt] = u;
+            nxt[cnt] = head[v];
+            head[v] = cnt;
+        }
+
+        int begin(int x){
+            return head[x];
+        }
+
+        int next(int x){
+            return nxt[x];
+        }
+
+        int get(int x){
+            return to[x];
+        }
+
+    };
+
+    // pre work
+
+    int n, m;
+    static Graph graph;
+
+    read(n), read(m);
+
+    for(int i = 1; i < n; i++){
+        int u, v;
+        read(u), read(v);
+        graph.add_edge(u, v, true);
+    }
+
+    //    lca
+
+    static Graph::Lca lca(graph);
+
+    //    pre
+
+    static int w[N + 5];
+
+    for(int i = 1; i <= n; i++){
+        read(w[i]);
+    }
+
+    static int s[M + 5], t[M + 5], dis[M + 5], begin[N + 5], ans[N + 5];
+    static Graph end_trail, lca_trail;
+    auto dep = lca.get_dep_array();
+
+    for(int i = 1; i <= m; i++){
+        read(s[i]), read(t[i]);
+        int _lca = lca.lca(s[i], t[i]);
+        dis[i] = lca.get_dis(s[i], t[i], _lca);
+        begin[s[i]]++;
+        end_trail.add_edge(t[i], i);
+        lca_trail.add_edge(_lca, i);
+        if(dep[_lca] + w[_lca] == dep[s[i]]){
+            ans[_lca]--;
+        }
+    }
+
+    //    get ans
+
+    // w, s, t, dis, begin, end_trail, lca_trail, graph
+
+    auto a = make_tuple(w, s, t, dis, begin, ans, dep, &end_trail, &lca_trail, &graph);
+
+    Func::dfs(1, 0, a);
+
+    for(int i = 1; i <= n; i++){
+        printf("%d ", ans[i]);
+    }
+}
+
+void read(int &x){
+    int s = 0, w = 1, c = getchar();
+    while(c < '0' || '9' < c){
+        if(c == '-'){
+            w = -1;
+        }
+        c = getchar();
+    }
+    while('0' <= c && c <= '9'){
+        s = s * 10 + c - '0';
+        c = getchar();
+    }
+    x = s * w;
+}
+
+ * */
+
+/*
+
+#include <bits/stdc++.h>
+using namespace std;
+
+const int N = 300000, M = 300000;
+
+void read(int&);
+
+class Func{
+public:
+    template <typename MyTuple>
+    static void dfs(int u, int fa, MyTuple data){
+
+        static int up_bucket[2 * N + 5], down_bucket[2 * N + 5];
+        static auto [w, s, t, dis, begin, ans, dep, end_trail, lca_trail, graph] = data;
+
+        int up_pre = up_bucket[w[u] + dep[u]], down_pre = down_bucket[w[u] - dep[u] + N];
+
+        for(int i = graph->begin(u); i; i = graph->next(i)){
+            int v = graph->get(i);
+            if(v == fa){
+                continue;
+            }
+            dfs(v, u, data);
+        }
+
+        up_bucket[dep[u]] += begin[u];
+
+        for(int i = end_trail->begin(u); i; i = end_trail->next(i)){
+            int v = end_trail->get(i);
+            down_bucket[dis[v]-dep[t[v]]+N]++;
+        }
+
+        ans[u] += up_bucket[w[u] + dep[u]] - up_pre + down_bucket[w[u]-dep[u]+N] - down_pre;
+
+        for(int i = lca_trail->begin(u); i; i = lca_trail->next(i)){
+            int v = lca_trail->get(i);
+            up_bucket[dep[s[v]]]--;
+            down_bucket[dis[v]-dep[t[v]]+N]--;
+        }
+    };
+
+};
+
+int main(){
+
+    class Graph{
+        int head[N + 5], nxt[2 * N + 5], to[2 * N + 5], cnt;
+    public:
+
+        class Lca{
+            int fo[N + 5][20]{}, dep[N + 5]{};
+            Graph &graph;
+
+            void dfs(int u, int fa){
+                static int *head = graph.head, *nxt = graph.nxt, *to = graph.to;
+                fo[u][0] = fa;
+                dep[u] = dep[fa] + 1;
+                for(int i = 1; i < 20; i++){
+                    fo[u][i] = fo[fo[u][i-1]][i-1];
+                }
+                for(int i = head[u]; i; i = nxt[i]){
+                    int v = to[i];
+                    if(v != fa){
+                        dfs(v, u);
+                    }
+                }
+            }
+
+        public:
+            explicit Lca(Graph &graph, int rt = 1) : graph(graph) {
+                dfs(rt, 0);
+            }
+
+            int lca(int x, int y){
+                if(dep[x] > dep[y]){
+                    swap(x, y);
+                }
+
+                for(int i = 19; i >= 0; i--){
+                    if(dep[fo[y][i]] >= dep[x]){
+                        y = fo[y][i];
+                    }
+                }
+
+                if(y == x){
+                    return x;
+                }
+
+                for(int i = 19; i >= 0; i--){
+                    if(fo[x][i] != fo[y][i]){
+                        x = fo[x][i];
+                        y = fo[y][i];
+                    }
+                }
+
+                return fo[x][0];
+            }
+
+            int get_dis(int u, int v, int _lca = -1){
+                if(_lca == -1){
+                    _lca = lca(u, v);
+                }
+                return dep[u] + dep[v] - 2 * dep[_lca];
+            }
+
+            int* get_dep_array(){
+                return dep;
+            }
+        };
+
+        void add_edge(int u, int v, bool flag = false){
+            to[++cnt] = v;
+            nxt[cnt] = head[u];
+            head[u] = cnt;
+
+            if(!flag){
+                return;
+            }
+
+            to[++cnt] = u;
+            nxt[cnt] = head[v];
+            head[v] = cnt;
+        }
+
+        int begin(int x){
+            return head[x];
+        }
+
+        int next(int x){
+            return nxt[x];
+        }
+
+        int get(int x){
+            return to[x];
+        }
+
+    };
+
+    // pre work
+
+    int n, m;
+    static Graph graph;
+
+    read(n), read(m);
+
+    for(int i = 1; i < n; i++){
+        int u, v;
+        read(u), read(v);
+        graph.add_edge(u, v, true);
+    }
+
+    //    lca
+
+    static Graph::Lca lca(graph);
+
+    //    pre
+
+    static int w[N + 5];
+
+    for(int i = 1; i <= n; i++){
+        read(w[i]);
+    }
+
+    static int s[M + 5], t[M + 5], dis[M + 5], begin[N + 5], ans[N + 5];
+    static Graph end_trail, lca_trail;
+    auto dep = lca.get_dep_array();
+
+    for(int i = 1; i <= m; i++){
+        read(s[i]), read(t[i]);
+        int _lca = lca.lca(s[i], t[i]);
+        dis[i] = lca.get_dis(s[i], t[i], _lca);
+        begin[s[i]]++;
+        end_trail.add_edge(t[i], i);
+        lca_trail.add_edge(_lca, i);
+        if(dep[_lca] + w[_lca] == dep[s[i]]){
+            ans[_lca]--;
+        }
+    }
+
+    //    get ans
+
+    // w, s, t, dis, begin, end_trail, lca_trail, graph
+
+    auto a = make_tuple(w, s, t, dis, begin, ans, dep, &end_trail, &lca_trail, &graph);
+
+    Func::dfs(1, 0, a);
+
+    for(int i = 1; i <= n; i++){
+        printf("%d ", ans[i]);
+    }
+}
+
+void read(int &x){
+    int s = 0, w = 1, c = getchar();
+    while(c < '0' || '9' < c){
+        if(c == '-'){
+            w = -1;
+        }
+        c = getchar();
+    }
+    while('0' <= c && c <= '9'){
+        s = s * 10 + c - '0';
+        c = getchar();
+    }
+    x = s * w;
+}
+
+ * */

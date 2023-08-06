@@ -34,6 +34,8 @@ void read(long long &x){
     x = s * w;
 }
 
+
+//TODO 指针版graph
 const int Size = 1000005;
 static const int MaxN = 500005;
 class Graph {

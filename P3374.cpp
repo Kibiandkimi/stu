@@ -37,3 +37,71 @@ int main(){
     }
 
 }
+
+// 2023/8/1
+/*
+#include <bits/stdc++.h>
+using namespace std;
+
+const int N = 500000;
+
+void read(int&);
+
+int main(){
+    class TreeArray{
+        int data[4 * N + 5]{}, n;
+    public:
+        TreeArray(int n):n(n){}
+        void add(int x, int v){
+            while(x <= n){
+                data[x] += v;
+                x += (x&-x);
+            }
+        }
+        int query(int x){
+            int ans = 0;
+            while(x){
+                ans += data[x];
+                x -= (x&-x);
+            }
+            return ans;
+        }
+    };
+
+    int n, m;
+    read(n), read(m);
+
+    TreeArray tree(n);
+
+    for(int i = 1; i <= n; i++){
+        int t;
+        read(t);
+        tree.add(i, t);
+    }
+
+    for(int i = 1; i <= m; i++){
+        int opt, x, y;
+        read(opt), read(x), read(y);
+        if(opt == 1){
+            tree.add(x, y);
+        }else{
+            printf("%d\n", tree.query(y)-tree.query(x-1));
+        }
+    }
+}
+
+void read(int& x){
+    int s = 0, w = 1, c = getchar();
+    while(c < '0' || '9' < c){
+        if(c == '-'){
+            w = -1;
+        }
+        c = getchar();
+    }
+    while('0' <= c && c <= '9'){
+        s = s * 10 + c - '0';
+        c = getchar();
+    }
+    x = s * w;
+}
+*/

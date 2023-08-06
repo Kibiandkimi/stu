@@ -61,3 +61,112 @@ int main(){
         printf("%d\n", res[i]);
     }
 }
+
+// 2023/8/3
+
+/*
+
+#include <bits/stdc++.h>
+using namespace std;
+
+const int N = 1000000, M = 1000000;
+
+void read(int&);
+
+int main(){
+
+    class TreeArray{
+        int data[4 * N + 5]{}, n;
+    public:
+
+        explicit TreeArray(int n):n(n){};
+
+        void insert(int x, int v){
+            while(x <= n){
+                data[x] += v;
+                x += (x & -x);
+            }
+        }
+
+        int query(int x){
+            int ans = 0;
+            while(x){
+                ans += data[x];
+                x -= (x&-x);
+            }
+            return ans;
+        }
+    };
+
+    int n;
+    read(n);
+    static int a[N + 5];
+    for(int i = 1; i <= n; i++){
+        read(a[i]);
+    }
+
+    class Question{
+    public:
+        int id, l, r, ans;
+        static bool cmp_with_r(const Question &a, const Question &b){
+            return a.r < b.r;
+        }
+        static bool cmp_with_id(const Question &a, const Question &b){
+            return  a.id < b.id;
+        }
+    };
+
+    int m;
+    read(m);
+
+    static Question q[M + 5];
+
+    for(int i = 1; i <= m; i++){
+        q[i].id = i;
+        read(q[i].l), read(q[i].r);
+    }
+
+    sort(q + 1, q + 1 + m, Question::cmp_with_r);
+
+    static int last[N + 5], ans[M + 5];
+    static TreeArray tree(n);
+
+    for(int i = 1, j = 1; i <= n; i++){
+        if(!last[a[i]]){
+            tree.insert(i, 1);
+            last[a[i]] = i;
+        }else{
+            tree.insert(last[a[i]], -1);
+            tree.insert(i, 1);
+            last[a[i]] = i;
+        }
+        while(q[j].r == i){
+            q[j].ans = tree.query(q[j].r) - tree.query(q[j].l - 1);
+//          printf("%d\n", );
+            j++;
+        }
+    }
+
+    sort(q + 1, q + 1 + m, Question::cmp_with_id);
+
+    for(int i = 1; i <= m; i++){
+        printf("%d\n", q[i].ans);
+    }
+}
+
+void read(int &x){
+    int s = 0, w = 1, c = getchar();
+    while(c < '0' || '9' < c){
+        if (c == '-'){
+            w = -1;
+        }
+        c = getchar();
+    }
+    while('0' <= c && c <= '9'){
+        s = s * 10 + c - '0';
+        c = getchar();
+    }
+    x = s * w;
+}
+
+*/
