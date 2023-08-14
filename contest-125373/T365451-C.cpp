@@ -24,7 +24,6 @@ int main(){
             }
         }
 
-
     public:
         void add_edge(int u, int v, bool flag = false){
             to[++cnt] = v;
@@ -40,25 +39,12 @@ int main(){
             head[v] = cnt;
         }
 
-        void init(){
-            dfs(1, 0);
+        void init(int rt = 1){
+            dfs(rt, 0);
         }
 
-        int calc(int u, int v, int *res){
-            if(dep[u] > dep[v]){
-                swap(u, v);
-            }
-            int cnt_of_res = 0;
-            while(dep[v] > dep[u]){
-                res[cnt_of_res++] = v;
-                v = fa[v];
-            }
-            while(v != u){
-                res[cnt_of_res++] = u, res[cnt_of_res++] = v;
-                u = fa[u], v = fa[v];
-            }
-            res[cnt_of_res++] = u;
-            return cnt_of_res;
+        int* get_dep(){
+            return dep;
         }
     };
 
@@ -87,41 +73,33 @@ int main(){
 
     static Graph tree[K];
 
+    static int dis[N + 5][N + 5];
+
     for(int i = 0; i < k; i++){
         for(int j = 1; j < n; j++){
             int u, v;
             read(u), read(v);
             tree[i].add_edge(u, v, true);
         }
-        tree[i].init();
+        for(int j = 1; j <= n; j++) {
+            tree[i].init(j);
+            auto dep = tree[i].get_dep();
+            for(int _k = 1; _k <= n; _k++){
+                dis[j][_k] += dep[_k] - 1;
+            }
+        }
     }
 
     static int ans[N + 5][N + 5];
 
-    int cnt = 1;
-
     for(int i = 1; i < n; i++){
         for(int j = i+1; j <= n; j++){
-            static int flag[N + 5];
-            for(int flag_id = 1; flag_id <= n; flag_id++){
-                flag[flag_id] = cnt;
-            }
-            for(int id = 0; id < k; id++){
-                static int res[N + 5];
-                int sum = tree[id].calc(i, j, res);
-                for(int _i = 0; _i < sum; _i++){
-                    flag[res[_i]] = (flag[res[_i]] == cnt) ? cnt+1 : 0;
+            for(int _k = 1; _k <= n; _k++){
+                if(dis[i][_k] + dis[_k][j] == dis[i][j]){
+                    ans[i][j]++;
                 }
-                for(int _i = 1; _i <= n; _i++){
-                    flag[_i] = (flag[_i] == cnt+1) ? cnt : 0;
-                }
-
-            }
-            for(int flag_id = 1; flag_id <= n; flag_id++){
-                (flag[flag_id] == cnt) ? ans[i][j]++ : 0;
             }
             ans[j][i] = ans[i][j];
-            cnt++;
         }
     }
 

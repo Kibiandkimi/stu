@@ -25,14 +25,20 @@ int main(){
             x = s * w;
         }
 
-        static void init_pow(int a, int p, const int mod, int *res){
-            res[0] = 1;
-            for(int i = 1; i <= p; i++){
-                res[i] = (int)((long long)res[i-1] * a % mod);
+        static int pow(int a, int p, int mod){
+            int res = 1;
+            while(p){
+                if(p & 1){
+                    res = (int)((long long)res * a % mod);
+                }
+                a = (int)((long long)a * a % mod);
+                p >>= 1;
             }
+            return res;
         }
 
         static int calc(int c, int n, const int mod){
+            /*
             static int pow_c[100005];
             int res = 0, now_add = 1, now_decrease = 1;
             init_pow(c, n-1, mod, pow_c);
@@ -44,6 +50,8 @@ int main(){
                 now_decrease = (int)((long long)now_decrease * (c-1) % mod);
             }
             return res;
+            */ // 75pts -> 100pts
+            return (int)((((long long)pow(c+1, n, mod) - (long long)2*pow(c, n, mod) + pow(c-1, n, mod)) % mod + mod) % mod);
         }
     };
 
@@ -55,6 +63,11 @@ int main(){
     while(T--){
         int n, g, l;
         read(n), read(g), read(l);
+
+        if(l % g != 0){ // 0pts -> 75pts
+            printf("0\n");
+            continue;
+        }
 
         l /= g;
 
