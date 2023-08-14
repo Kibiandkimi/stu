@@ -45,13 +45,11 @@ int main(){
         long long ans = 0, now = num_of_type[1], pre_last = 0;
 
         for(int i = 2; i <= cnt_of_type; i++){
-            if(i == cnt_of_type){
-                pre_last = ans;
-            }
             if(now >= num_of_type[i]){
                 ans += num_of_type[i];
                 now -= num_of_type[i];
             }else{
+                pre_last = ans; // 20pts -> 100pts
                 ans += now;
                 now = num_of_type[i] - now;
             }
