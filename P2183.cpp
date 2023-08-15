@@ -29,9 +29,9 @@ int main(){
             int res = 1;
             while(p){
                 if(p & 1){
-                    res = (int)(((long long)res * x) % mod);
+                    res = (int)((long long)res * x % mod);
                 }
-                x = (int)(((long long)x * x) % mod);
+                x = (int)((long long)x * x % mod);
                 p >>= 1;
             }
             return res;
@@ -111,8 +111,10 @@ int main(){
 
     auto read = Tools::read;
 
-    int mod, n, m, sum = 0;
+    int mod, n, m;
     static int w[M + 5];
+
+    long long sum = 0;
 
     read(mod), read(n), read(m);
     for(int i = 1; i <= m; i++){
@@ -143,6 +145,7 @@ int main(){
             now = (int)(((long long)now + Tools::calc_C(n, w[k], mod, p, p)) % mod);
         }
         ans = (int)((long long)ans * now % mod);
+        n -= w[k];
     }
 
     printf("%d\n", ans);
