@@ -51,3 +51,86 @@ int main(){
     dfs(1, 0);
     printf("%d", res);
 }
+
+// 2023/8/24
+
+/*
+ *
+#include <bits/stdc++.h>
+using namespace std;
+
+int main(){
+
+    static const int N = 20, MaxV = 20 * 100;
+
+    class Tools{
+    public:
+        static void read(int &x){
+            int s = 0, w = 1, c = getchar();
+            while(c < '0' || '9' < c){
+                if(c == '-'){
+                    w = -1;
+                }
+                c = getchar();
+            }
+            while('0' <= c && c <= '9'){
+                s = s * 10 + c - '0';
+                c = getchar();
+            }
+            x = s * w;
+        }
+    };
+
+    auto read = Tools::read;
+
+    int n, m;
+    read(n), read(m);
+
+    static int raw_data[N + 5], maxV, minV = 101;
+    for(int i = 1; i <= n; i++){
+        read(raw_data[i]);
+        maxV += raw_data[i];
+        minV = min(minV, raw_data[i]);
+    }
+
+    long long ans = 0;
+    static bool vis[N + 5];
+
+    auto f = [&](auto && f, int dep, int now) -> void{
+        if(dep < m){
+            for(int i = now; i <= n; i++){
+                vis[i] = true;
+                f(f, dep + 1, i + 1);
+                vis[i] = false;
+            }
+        }else{
+            static bool d[MaxV + 5][N + 5] = {true};
+            static long long res;
+            res = 0;
+            for(int j = 1; j <= n; j++){
+                for(int i = 0; i <= maxV; i++){
+                    if(!vis[j] && raw_data[j] <= i && d[i - raw_data[j]][j - 1]){
+                        d[i][j] = true;
+                    }else{
+                        d[i][j] = d[i][j - 1];
+                    }
+                }
+            }
+            for(int i = minV; i <= maxV; i++){
+                d[i][n] ? res++ : res;
+            }
+            for(int j = 1; j <= n; j++){
+                for(int i = minV; i <= maxV; i++){
+                    d[i][j] = false;
+                }
+            }
+            ans = max(ans, res);
+        }
+    };
+
+    f(f, 0, 1);
+
+    printf("%lld\n", ans);
+}
+ *
+ * */
