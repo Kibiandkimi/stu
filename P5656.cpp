@@ -126,3 +126,72 @@ int main(){
 }
 
  * */
+
+// 2023/8/26
+
+/*
+ *
+#include <bits/stdc++.h>
+using namespace std;
+
+int main(){
+    class Tools{
+    public:
+        static void read(int &x){
+            int s = 0, w = 1, c = getchar();
+            while(c < '0' || '9' < c){
+                if(c == '-'){
+                    w = -1;
+                }
+                c = getchar();
+            }
+            while('0' <= c && c <= '9'){
+                s = s * 10 + c - '0';
+                c = getchar();
+            }
+            x = s * w;
+        }
+
+        static long long exgcd(long long a, long long b, long long &x, long long &y){
+            if(!b){
+                x = 1, y = 0;
+                return a;
+            }
+            long long d = exgcd(b, a % b, x, y);
+            long long t = x;
+            x = y;
+            y = t - a / b * y;
+            return d;
+        }
+    };
+
+    auto read = Tools::read;
+
+    int T;
+    read(T);
+
+    while(T--){
+        int a, b, c;
+        read(a), read(b), read(c);
+
+        long long x, y;
+        long long gcd = Tools::exgcd(a, b, x, y);
+
+        if(c % gcd != 0){
+            printf("-1\n");
+            continue;
+        }
+
+        long long dx = b / gcd, dy = a / gcd, x1 = x * c / gcd, y1 = y * c / gcd;
+        long long l = ceil((-x1 + 1.0) / (double)dx), r = floor((y1 - 1.0) / (double)dy);
+
+
+        if(l > r){
+            printf("%lld %lld\n", x1 + l * dx, y1 - r * dy);
+        }else{
+            printf("%lld %lld %lld %lld %lld\n", r - l + 1, x1 + l * dx, y1 - r * dy, x1 + r * dx, y1 - l * dy);
+        }
+    }
+}
+ *
+ * */
