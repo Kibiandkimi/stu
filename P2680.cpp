@@ -105,8 +105,7 @@ int main(){
 }
 
 
-// 2023/9/2
-// TODO not finish
+// 2023/9/3
 
 /*
  *
@@ -140,7 +139,7 @@ int main() {
         int data[N + 5]{}, n;
 
     public:
-        BinaryIndexedTree(int n) : n(n) {}
+        explicit BinaryIndexedTree(int n) : n(n) {}
 
         void update(int x, int v) {
             while (x <= n) {
@@ -155,9 +154,18 @@ int main() {
                 res += data[x];
                 x -= x & (-x);
             }
+            return res;
         }
 
-        int sum(int l, int r){
+        int sum(int l, int r, bool flag = false){
+            if(flag){
+                return quick_sum(l, r);
+            }else{
+                return query(r) - query(l - 1);
+            }
+        }
+
+        int quick_sum(int l, int r){
             l--;
             int res = 0;
             while(r > l){
@@ -169,6 +177,85 @@ int main() {
                 l -= l & (-l);
             }
             return res;
+        }
+    };
+
+    class SegTree{
+        class Node{
+        public:
+            int l, r, mx, tag;
+            Node *ls, *rs;
+        };
+        Node node[4 * N + 5]{};
+
+        void build(Node *u, int l, int r, const int *data){
+            static int cnt = 1;
+            u->l = l, u->r = r;
+            if(l == r){
+                u->mx = data == nullptr ? 0 : data[l];
+                return;
+            }
+            int mid = (l + r) / 2;
+            u->ls = &node[++cnt], u->rs = &node[++cnt];
+            build(u->ls, l, mid, data);
+            build(u->rs, mid + 1, r, data);
+            u->mx = max(u->ls->mx, u->rs->mx);
+        }
+
+        static void update(Node *u, int val){
+            u->tag = max(u->tag, val);
+            u->mx = max(u->mx, val);
+        }
+
+        static void push_down(Node *u){
+            if(u->tag){
+                update(u->ls, u->tag);
+                update(u->rs, u->tag);
+                u->tag = 0;
+            }
+        }
+
+        static void modify(Node *u, const int l, const int r, const int v){
+            if(l <= u->l && u->r <= r){
+                update(u, v);
+                return;
+            }
+
+            push_down(u);
+
+            if(l <= u->ls->r){
+                modify(u->ls, l, r, v);
+            }
+            if(r >= u->rs->l){
+                modify(u->rs, l, r, v);
+            }
+
+            u->mx = max(u->ls->mx, u->rs->mx);
+        }
+
+    public:
+        explicit SegTree(int n, const int *data = nullptr){
+            build(&node[1], 1, n, data);
+        }
+
+        void modify(int l, int r, int v){
+            if(l > r){
+                return;
+            }
+            modify(&node[1], l, r, v);
+        }
+
+        int query(int x){
+            Node *u = &node[1];
+            while(u->l < u->r){
+                push_down(u);
+                if(x <= u->ls->r){
+                    u = u->ls;
+                }else{
+                    u = u->rs;
+                }
+            }
+            return u->mx;
         }
     };
 
@@ -217,12 +304,14 @@ int main() {
                     decompose(u->heavy_son, top);
 
                     for (auto i = graph->head[u->id]; i != nullptr; i = i->nxt) {
-                        if (i->to != u->heavy_son->id && i->to != u->fa->id) {
+                        if (i->to != u->heavy_son->id && (u->fa == nullptr || i->to != u->fa->id) ) {
                             decompose(&node[i->to], &node[i->to]);
                         }
                     }
                 }
             }
+
+            friend class Work;
 
         public:
             HPD(Graph *graph, int rt, int n) : graph(graph), rt(rt), bit(n) {
@@ -231,8 +320,11 @@ int main() {
                 decompose(&node[rt], &node[rt]);
 
                 static int init_data[N + 5];
-                static bool vis[N + 5];
+                static bool vis[N + 5], flag;
                 static queue<int> q;
+
+                flag ? memset(vis, 0, sizeof vis) : nullptr;
+
                 q.push(rt);
                 vis[rt] = true;
                 while (!q.empty()) {
@@ -245,10 +337,13 @@ int main() {
                             } else {
                                 init_data[i->to] = i->w;
                             }
+                            vis[i->to] = true;
                             q.push(i->to);
                         }
                     }
                 }
+
+                flag = true;
 
                 for (int i = 1; i <= n; i++) {
                     bit.update(i, init_data[dfn_to_id[i]]);
@@ -278,13 +373,44 @@ int main() {
                 return ans;
             }
 
-            //            Node get(int id) {
-            //                return node[id];
-            //            }
-            //
-            //            int rnk(int x) {
-            //                return dfn_to_id[x];
-            //            }
+            class Data{
+            public:
+                class Interval{
+                public:
+                    int l, r;
+
+                    static bool cmp(const Interval &a, const Interval &b){
+                        return a.l < b.l;
+                    }
+
+                    explicit Interval(int l = 0, int r = 0):l(l), r(r){}
+                };
+                vector<Interval> data;
+            };
+
+            Data query_path(int _u, int _v){
+                Data res;
+                Node *u = &node[_u], *v = &node[_v];
+
+                while(u->top != v->top){
+                    if(u->top->dep >= v->top->dep){
+                        res.data.emplace_back(u->top->dfn, u->dfn);
+                        u = u->top->fa;
+                    }else{
+                        res.data.emplace_back(v->top->dfn, v->dfn);
+                        v = v->top->fa;
+                    }
+                }
+
+                if(u->dfn <= v->dfn){
+                    res.data.emplace_back(u->dfn + 1, v->dfn);
+                }else{
+                    res.data.emplace_back(v->dfn + 1, u->dfn);
+                }
+
+                return res;
+            }
+
         };
 
         void add_edge(int u, int v, int w, bool flag = false) {
@@ -309,21 +435,74 @@ int main() {
     read(n), read(m);
 
     static Graph graph;
-    for (int i = 1; i <= n; i++) {
+    for (int i = 1; i < n; i++) {
         static int u, v, w;
         read(u), read(v), read(w);
         graph.add_edge(u, v, w, true);
     }
 
-    int root = (int) (rnd() % n + n) % n + 1;
+    static int root = (int) (rnd() % n + n) % n + 1, mx_u, mx_v, mx;
     static Graph::HPD Hpd(&graph, root, n);
+    static SegTree tree(n);
 
     for (int i = 1; i <= m; i++) {
         static int u, v, len;
         read(u), read(v);
         len = Hpd.get_length(u, v);
+        auto res = Hpd.query_path(u, v);
+        sort(res.data.begin(), res.data.end(), Graph::HPD::Data::Interval::cmp);
+        if(res.data.front().l > 1){
+            tree.modify(1, res.data[0].l - 1, len);
+        }
+        if(res.data.back().r < n){
+            tree.modify(res.data.back().r + 1, n, len);
+        }
 
+        for(int j = 0; j < res.data.size() - 1; j++){
+            tree.modify(res.data[j].r + 1, res.data[j + 1].l - 1, len);
+        }
+
+        if(len > mx){
+            mx_u = u, mx_v = v, mx = len;
+        }
     }
+
+    class Work{
+    public:
+        int operator () (){
+            int ans = 1e9;
+
+            Graph::HPD::Node *u = &Hpd.node[mx_u], *v = &Hpd.node[mx_v];
+
+            if(u == v){
+                return 0;
+            }
+
+            if(u->dep < v->dep){
+                swap(u, v);
+            }
+            while(u->dep != v->dep){
+                ans = min(ans, max(mx - Hpd.bit.sum(u->dfn, u->dfn), tree.query(u->dfn)));
+                u = u->fa;
+            }
+            while(u != v){
+                if(u->dep > v->dep){
+                    ans = min(ans, max(mx - Hpd.bit.sum(u->dfn, u->dfn), tree.query(u->dfn)));
+                    u = u->fa;
+                }else{
+                    ans = min(ans, max(mx - Hpd.bit.sum(v->dfn, v->dfn), tree.query(v->dfn)));
+                    v = v->fa;
+                }
+            }
+
+            return ans;
+        }
+    };
+
+    int ans = Work{}();
+
+    printf("%d\n", ans);
+
 }
  *
  * */
