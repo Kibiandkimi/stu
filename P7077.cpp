@@ -32,7 +32,7 @@ Func func[100005];
 vector<int> tp_res;
 
 void tp(){
-    int in[100005];
+    static int in[100005];
     vector<int> g[100005];
     queue<int> tp_q;
     int vis[100005] = {0};
@@ -91,8 +91,8 @@ void add_main(){
 void jx(){
     int stp = tp_res.size();
     add_main();
-    int y[100005] = {0}, vis[100005] = {0};
-    long long mul_now[1000005];
+    static int y[100005] = {0}, vis[100005] = {0};
+    static long long mul_now[1000005];
     for(int i = 0; i <= stp; i++){
         int u = tp_res[i];
         int so = c3[u].opt.size();
