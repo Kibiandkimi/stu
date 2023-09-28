@@ -1,9 +1,6 @@
 //
 // Created by kibi on 23-9-10.
 //
-
-// TODO not finish
-
 #include <bits/stdc++.h>
 using namespace std;
 
@@ -16,7 +13,7 @@ int main(){
         static void read(int &x){
             int s = 0, w = 1, c = getchar();
             while(c < '0' || '9' < c){
-                if(c == '-')[[unlikely]]{
+                if(c == '-'){
                     w = -1;
                 }
                 c = getchar();
@@ -32,12 +29,11 @@ int main(){
     class Graph{
         class Edge{
         public:
-            int v{};
-            Edge *nxt{nullptr};
+            int v;
+            Edge *nxt;
         };
-
-        Edge *head[N + 5]{nullptr};
-        Edge edge[N + 5];
+        Edge *head[N + 5];
+        Edge edge[2 * N + 5];
         int cnt;
 
         friend class Work;
@@ -47,7 +43,7 @@ int main(){
             edge[++cnt] = {v, head[u]};
             head[u] = &edge[cnt];
 
-            if(!flag)[[likely]]{
+            if(!flag){
                 return;
             }
 
@@ -57,35 +53,123 @@ int main(){
 
     auto read = Tools::read;
 
-    int n, m;
+    static int n, m;
     read(n), read(m);
 
-    static bool in[N + 5];
     static Graph graph;
+    static bool rt[N + 5];
     for(int i = 1; i <= n; i++){
-        int pre;
-        read(pre);
-        if(pre != -1){
-            in[i] = true;
-            graph.add_edge(pre, i);
+        int fa;
+        read(fa);
+        if(fa == -1 || fa == i){
+            rt[i] = true;
+            continue;
         }
+        graph.add_edge(fa, i);
     }
 
+    static int raw_data[N + 5];
+    for(int i = 1; i <= n; i++){
+        read(raw_data[i]);
+    }
+
+    static int ans = 1e9;
+
     class Work{
-    public:
-        int calc_tree(int x, int fa){
-            for(auto i = graph.head[x]; i; i = i->nxt){
-                if(i->v != fa){
-                    calc_tree(i->v, x);
+
+        class Data{
+        public:
+            Data(int val, int num):val(val), num(num){}
+
+            int val, num;
+            class Cmp{
+            public:
+                bool operator () (const Data &a, const Data &b){
+                    return a.val > b.val;
+                }
+            };
+        };
+
+        void deal(priority_queue<Data, vector<Data>, Data::Cmp> &q, int val, bool flag = true){
+            Data temp_data = q.top();
+            q.pop();
+            int num = temp_data.num + flag;
+            long long sum = (long long)temp_data.val * temp_data.num + val;
+            int avg = (int)(sum / num);
+            while(!q.empty() && avg > q.top().val){
+                temp_data = q.top();
+                q.pop();
+                num += temp_data.num;
+                sum += (long long)temp_data.num * temp_data.val;
+                avg = (int)(sum / num);
+            }
+            int rest = (int)(sum - (long long)avg * num);
+            if(rest) {
+                q.emplace(avg + 1, rest);
+            }
+            q.emplace(avg, num - rest);
+        }
+
+        priority_queue<Data, vector<Data>, Data::Cmp> dfs(int u){
+            priority_queue<Data, vector<Data>, Data::Cmp> q, tem;
+
+            for(auto i = graph.head[u]; i; i = i->nxt){
+                tem = dfs(i->v);
+                while(!tem.empty()){
+                    q.push(tem.top());
+                    tem.pop();
                 }
             }
+
+            if(!q.empty() && raw_data[u] > q.top().val){
+                deal(q, raw_data[u]);
+            }else if(q.empty() || raw_data[u] < q.top().val){
+                q.emplace(raw_data[u], 1);
+            }else{
+                Data temp_data = q.top();
+                q.pop();
+                temp_data.num++;
+                q.emplace(temp_data);
+            }
+
+            return q;
+        }
+
+    public:
+        Work(){
+            bool flag = false;
+
+            priority_queue<Data, vector<Data>, Data::Cmp> q, tem;
+            for(int i = 1; i <= n; i++){
+                if(rt[i]){
+                    tem = dfs(i);
+                    while(!tem.empty()){
+                        q.push(tem.top());
+                        tem.pop();
+                    }
+                    flag = true;
+                }
+            }
+
+            if(!flag){
+                long long sum = 0;
+                for(int i = 1; i <= n; i++){
+                    sum += raw_data[i];
+                }
+                sum += m;
+                sum /= n;
+                ans = (int)sum;
+                return;
+            }
+
+            deal(q, m, false);
+
+            ans = q.top().val;
         }
     };
 
-    for(int i = 1; i <= n; i++){
-        if(!in[i]){
+    Work();
 
-        }
-    }
+    printf("%d\n", ans);
 
 }

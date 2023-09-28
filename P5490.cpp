@@ -69,3 +69,156 @@ int main(){
     }
     printf("%lld", ans);
 }
+
+// 2023/9/28
+
+/*
+ *
+
+ #include <bits/stdc++.h>
+using namespace std;
+
+int main(){
+
+   const int N = 100000;
+
+   class Tools{
+   public:
+       static void read(int &x){
+           int s = 0, w = 1, c = getchar();
+           while(c < '0' || '9' < c){
+               if(c == '-'){
+                   w = -1;
+               }
+               c = getchar();
+           }
+           while('0' <= c && c <= '9'){
+               s = s * 10 + c - '0';
+               c = getchar();
+           }
+           x = s * w;
+       }
+   };
+
+   class Line{
+   public:
+       int l, r, y;
+       bool left;
+
+       static bool cmp(const Line &a, const Line &b){
+           return a.y == b.y ? a.left : a.y < b.y;
+       }
+   };
+
+   auto read = Tools::read;
+
+   int n;
+   read(n);
+
+   static Line line[2 * N + 5];
+   static int pre_x[2 * N + 5];
+   for(int i = 1; i <= n; i++){
+       static int x1, y1, x2, y2;
+       read(x1), read(y1), read(x2), read(y2);
+       line[(i << 1) - 1] = {x1, x2, y1, true};
+       line[i << 1] = {x1, x2, y2, false};
+       pre_x[(i << 1) - 1] = x1;
+       pre_x[i << 1] = x2;
+   }
+
+   sort(pre_x + 1, pre_x + 2 * n + 1);
+   sort(line + 1, line + 2 * n + 1, Line::cmp);
+
+   static map<int, int> to_mp;
+   static int cnt_of_mp, segTree_data[2 * N + 5];
+   to_mp[pre_x[1]] = ++cnt_of_mp;
+   for(int i = 2; i <= 2 * n; i++){
+       if(pre_x[i] != pre_x[i - 1]) {
+           to_mp[pre_x[i]] = ++cnt_of_mp;
+           segTree_data[cnt_of_mp - 1] = pre_x[i] - pre_x[i - 1];
+       }
+   }
+
+   class SegTree{
+       class Node{
+       public:
+           int l, r, len, sum, flag;
+           Node *ls, *rs;
+       };
+       Node node[4 * 2 * N + 5]{};
+
+       void build(Node *u, int l, int r, const int *data){
+           static int cnt = 1;
+           u->l = l, u->r = r;
+           if(l == r){
+               u->len = data == nullptr ? 0 : data[l];
+               return;
+           }
+
+           int mid = (l + r) >> 1;
+           u->ls = &node[++cnt], u->rs = &node[++cnt];
+           build(u->ls, l, mid, data);
+           build(u->rs, mid + 1, r, data);
+           u->len = u->ls->len + u->rs->len;
+       }
+
+       void modify(Node *u, int l, int r, bool val){
+           if(l <= u->l && u->r <= r){
+               u->flag += val ? 1 : -1;
+               if(!u->flag){
+                   if(u->l == u->r){
+                       u->sum = 0;
+                   }else {
+                       u->sum = u->ls->sum + u->rs->sum;
+                   }
+               }else{
+                   u->sum = u->len;
+               }
+               return;
+           }
+
+           //            push_down(u);
+
+           if(l <= u->ls->r){
+               modify(u->ls, l, r, val);
+           }
+           if(r >= u->rs->l){
+               modify(u->rs, l, r, val);
+           }
+
+           u->sum = u->flag ? u->len : u->ls->sum + u->rs->sum;
+       }
+   public:
+       SegTree(int n, const int *data){
+           build(&node[1], 1, n, data);
+       }
+
+       int query_(){
+           return node[1].sum;
+       }
+
+       void modify(int l, int r, bool val){
+           modify(&node[1], l, r, val);
+       }
+   };
+
+   static SegTree tree(cnt_of_mp - 1, segTree_data);
+
+   int last = line[1].y;
+   tree.modify(to_mp[line[1].l], to_mp[line[1].r] - 1, line[1].left);
+
+   long long ans = 0;
+   for(int i = 2; i <= 2 * n; i++){
+       if(line[i].y != last){
+           ans += (long long)(line[i].y - last) * tree.query_();
+       }
+       tree.modify(to_mp[line[i].l], to_mp[line[i].r] - 1, line[i].left);
+       last = line[i].y;
+   }
+
+   printf("%lld\n", ans);
+
+}
+
+ *
+ * */

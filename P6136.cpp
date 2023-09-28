@@ -175,3 +175,257 @@ int queryKth(long long k, int pos){
     }
     return pos;
 }
+
+// 2023/9/28
+
+// TODO try 01trie
+
+/*
+ *
+#include <bits/stdc++.h>
+using namespace std;
+
+int main(){
+    class Tools{
+    public:
+        static void read(int &x){
+            int s = 0, w = 1, c = getchar();
+            while(c < '0' || '9' < c){
+                if(c == '-'){
+                    w = -1;
+                }
+                c = getchar();
+            }
+            while('0' <= c && c <= '9'){
+                s = s * 10 + c - '0';
+                c = getchar();
+            }
+            x = s * w;
+        }
+
+        static int pow(int a, int p){
+            int res = 1;
+            while(p){
+                if(p & 1){
+                    res *= a;
+                }
+                a *= a;
+                p >>= 1;
+            }
+            return res;
+        }
+
+        static int abs(int x){
+            return x < 0 ? -x : x;
+        }
+    };
+
+    class Trie{
+        class Node{
+        public:
+            int sum;
+            int ls, rs;
+
+            Node():sum(0), ls(0), rs(0){};
+        };
+        Node root;
+        Node data[7500000];
+        int cnt{1};
+
+    public:
+        void insert(int x, int val = 1){
+            static bool num[35];
+            static int i;
+            memset(num, 0, sizeof num);
+            for(i = 0; x; i++){
+                num[i] = x & 1;
+                x >>= 1;
+            }
+            Node *now = &root;
+            for(i = 30; i >= 0; i--){
+
+                if(now->sum == -1){
+                    int temp = now->ls;
+                    now->ls = 0;
+                    if(temp & (1 << i)){
+                        now->rs = cnt++;
+                        data[now->rs].ls = temp - (1 << i);
+                        data[now->rs].sum = -1;
+                        if(!i){
+                            data[now->rs].sum = 1;
+                        }
+                    }else{
+                        now->ls = cnt++;
+                        data[now->ls].ls = temp;
+                        data[now->ls].sum = -1;
+                        if(!i){
+                            data[now->ls].sum = 1;
+                        }
+                    }
+                    now->sum = 1;
+                }
+
+                now->sum += val;
+                if(!num[i]){
+                    if(!now->ls){
+                        now->ls = cnt++;
+                        int temp = 0;
+                        for(int j = 0; j < i; j++){
+                            temp += num[j] * Tools::pow(2, j);
+                        }
+                        data[now->ls].ls = temp;
+                        data[now->ls].sum = -1;
+                        if(!i){
+                            data[now->ls].sum = 1;
+                        }
+                        return;
+                    }
+                    now = &data[now->ls];
+                }else{
+                    if(!now->rs){
+                        now->rs = cnt++;
+                        int temp = 0;
+                        for(int j = 0; j < i; j++){
+                            temp += num[j] * Tools::pow(2, j);
+                        }
+                        data[now->rs].ls = temp;
+                        data[now->rs].sum = -1;
+                        if(!i){
+                            data[now->rs].sum = 1;
+                        }
+                        return;
+                    }
+                    now = &data[now->rs];
+                }
+            }
+            now->sum += val;
+        }
+
+        int query_rnk_by_num(int x){
+            static int num[35], i, rnk;
+            memset(num, 0, sizeof num);
+            for(i = 0; x; i++){
+                num[i] = x & 1;
+                x >>= 1;
+            }
+            Node *now = &root;
+            for(i = 30, rnk = 1; i >= 0; i--){
+                if(now->sum == -1){
+                    return rnk;
+                }
+                if(!num[i]){
+                    now = &data[now->ls];
+                }else{
+                    rnk += Tools::abs(data[now->ls].sum);
+                    now = &data[now->rs];
+                }
+            }
+            return rnk;
+        }
+
+        int query_num_by_rnk(int rnk){
+            int res = 0;
+            Node *now = &root;
+            for(int i = 30; i >= 0; i--){
+                if(now->sum == -1){
+                    return res + now->ls;
+                }
+                if(rnk <= Tools::abs(data[now->ls].sum)){
+                    now = &data[now->ls];
+                }else{
+                    rnk -= Tools::abs(data[now->ls].sum);
+                    now = &data[now->rs];
+                    res += Tools::pow(2, i);
+                }
+            }
+            return res;
+        }
+
+        int query_sum_by_num(int x){
+            static int num[35], i;
+            memset(num, 0, sizeof num);
+            for(i = 0; x; i++){
+                num[i] = x & 1;
+                x >>= 1;
+            }
+            Node *now = &root;
+            for(i = 30; i >= 0; i--){
+                if(now->sum == -1){
+                    return 1;
+                }
+                if(!num[i]){
+                    now = &data[now->ls];
+                }else{
+                    now = &data[now->rs];
+                }
+            }
+            return Tools::abs(now->sum);
+        }
+
+        int query_pre(int x){
+            int rnk = query_rnk_by_num(x);
+            return query_num_by_rnk(--rnk);
+        }
+
+        int query_suc(int x){
+            int rnk = query_rnk_by_num(x), sum = query_sum_by_num(x);
+            return query_num_by_rnk(rnk + sum);
+        }
+
+    };
+
+    auto read = Tools::read;
+
+    static int n, m;
+    read(n), read(m);
+
+    static Trie trie;
+    for(int i = 1; i <= n; i++){
+        static int x;
+        read(x);
+        trie.insert(x);
+    }
+
+    static int ans;
+
+    for(int i = 1; i <= m; i++){
+        static int opt, x, last;
+        read(opt), read(x);
+        x ^= last;
+        switch(opt){
+            case 1:
+                trie.insert(x);
+                break;
+            case 2:
+                trie.insert(x, -1);
+                break;
+            case 3:
+                last = trie.query_rnk_by_num(x);
+                break;
+            case 4:
+                last = trie.query_num_by_rnk(x);
+                break;
+            case 5:
+                last = trie.query_pre(x);
+                break;
+            case 6:
+                last = trie.query_suc(x);
+                break;
+            default:
+                throw exception();
+        }
+        if(last < 0){
+            printf("%c", 'A' + opt - 1);
+            return 0;
+            throw exception();
+        }
+        if(opt > 2){
+            ans ^= last;
+        }
+    }
+
+    printf("%d\n", ans);
+
+}
+ *
+ * */
