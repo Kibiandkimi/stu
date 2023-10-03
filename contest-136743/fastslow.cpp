@@ -114,7 +114,7 @@ int main(){
                 if(!i->pos){
                     break;
                 }
-                ans = max(ans, (long long)cnt * sum[sum_id][i->pos - 1]);
+                ans = max(ans, (long long)cnt_of_y * sum[sum_id][i->pos - 1]);
             }
         }else if(mp_y >= 1000){
             int sum_id = mp_sum[y];
@@ -124,7 +124,7 @@ int main(){
                 if(i->pos == n - 1){
                     break;
                 }
-                ans = max(ans, (long long)cnt * (sum[sum_id][n - 1] - sum[sum_id][i->pos]));
+                ans = max(ans, (long long)cnt_of_x * (sum[sum_id][n - 1] - sum[sum_id][i->pos]));
             }
         }else{
             int cnt_of_tem = 0, sum_x = 0, sum_y = 0;
