@@ -5,6 +5,9 @@
 using namespace std;
 
 int main(){
+
+    const int Mod = 1000000007;
+
     class Tools{
     public:
         static void read(int &x){
@@ -16,34 +19,76 @@ int main(){
                 c = getchar();
             }
             while('0' <= c && c <= '9'){
-                s = s * 10 +  c - '0';
+                s = s * 10 + c - '0';
                 c = getchar();
             }
             x = s * w;
         }
     };
 
-    freopen("thursday.in", "r", stdin);
-    freopen("thursday.out", "w", stdout);
+    class Question{
+    public:
+        int n, m;
+    };
 
     auto read = Tools::read;
 
-    int T;
+    int T, mxn = 1, mxm = 1;
     read(T);
 
-    int n, m;
-    read(n), read(m);
+    Question q[T];
+    for(int i = 0; i < T; i++){
+        read(q[i].n), read(q[i].m);
+        mxn = max(mxn, max(q[i].n, q[i].m));
+        mxm = max(mxm, min(q[i].n, q[i].m));
+    }
 
-    int ans[6][6] = {{2, 3, 4, 4, 5, 5},
-                     {3, 3, 4, 5, 5, 6},
-                     {4, 4, 7, 8, 9, 10},
-                     {4, 5, 8, 9, 9, 10},
-                     {5, 5, 9, 9, 10, 11},
-                     {6, 7, 8, 9, 10, 20}};
+    const int rd = 500;
 
-    printf("%d\n", ans[n-1][m-1]);
+    int f[rd + 1][mxn + 1];
 
-    fclose(stdin);
-    fclose(stdout);
+    f[0][0] = 1;
+
+    for(int i = 1; i <= rd; i++){
+        for(int j = 0; j <= i * (i + 1) / 2 && j <= mxm; j++){
+            f[i][j] = f[i - 1][j];
+            if(j >= i){
+                f[i][j] += f[i - 1][j - i];
+                if(f[i][j] > Mod){
+                    f[i][j] -= Mod;
+                }
+            }
+        }
+    }
+
+    for(int i = 0; i <= rd; i++){
+        for(int j = 1; j <= i * (i + 1) / 2 && j <= mxm; j++){
+            f[i][j] += f[i][j - 1];
+            if(f[i][j] > Mod){
+                f[i][j] -= Mod;
+            }
+        }
+    }
+
+    for(int i = 0; i < T; i++){
+        int ans = 0;
+        int n = min(q[i].n, q[i].m), m = max(q[i].n, q[i].m);
+        for(int j = 1; j <= rd; j++){
+            int l = max(j * (j + 1) / 2 - m, 0), r = min(j * (j + 1) / 2, n);
+            if(l > r){
+                break;
+            }
+            ans += f[j][r];
+            if(l != 0){
+                ans -= f[j][l - 1];
+            }
+            if(ans > Mod){
+                ans -= Mod;
+            }else if(ans < 0){
+                ans += Mod;
+            }
+        }
+        printf("%d\n", ans);
+    }
 
 }

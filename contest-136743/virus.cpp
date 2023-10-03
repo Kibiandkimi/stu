@@ -41,61 +41,45 @@ int main(){
             u->mx = max(u->ls->mx, u->rs->mx);
         }
 
-        static void build(Node *u, int l, int r){
+        static void build(Node *u, int l, int r, const int *data){
             u->l = l, u->r = r, u->tag = 0;
             if(l == r){
-                u->mx = 0;
+                u->mx = data[l];
                 return;
             }
 
             int mid = (l + r) >> 1;
             u->ls = new Node, u->rs = new Node;
-            build(u->ls, l, mid);
-            build(u->rs, mid + 1, r);
+            build(u->ls, l, mid, data);
+            build(u->rs, mid + 1, r, data);
             update(u);
         }
 
-        static void update(Node *u, int k){
-            u->tag += k;
-            u->mx += k;
-        }
-
-        static void push_down(Node *u){
-            update(u->ls, u->tag);
-            update(u->rs, u->tag);
-            u->tag = 0;
-        }
-
-        static void modify(Node *u, int l, int r, int k){
+        static int query_(Node *u, int l, int r, int k){
             if(l <= u->l && u->r <= r){
-                update(u, k);
-                return;
+                return u->mx - k;
+            }else if(u->r < l || r < u->l){
+                return u->mx;
             }
 
-            push_down(u);
-
-            if(l <= u->ls->r){
-                modify(u->ls, l, r, k);
+            int mx = 0;
+            mx = max(mx, query_(u->ls, l, r, k));
+            if(mx >= u->rs->mx){
+                return mx;
             }
-            if(r >= u->rs->l){
-                modify(u->rs, l, r, k);
-            }
+            mx = max(mx, query_(u->rs, l, r, k));
 
-            update(u);
+            return mx;
         }
 
     public:
-        explicit SegTree(int n){
+        explicit SegTree(int n, const int *data){
             rt = new Node;
-            build(rt, 1, n);
+            build(rt, 1, n, data);
         }
 
-        void modify(int l, int r, int k){
-            modify(rt, l, r, k);
-        }
-
-        int query_(){
-            return rt->mx;
+        int query_(int l, int r, int val){
+            return query_(rt, l, r, val);
         }
     };
 
@@ -107,18 +91,25 @@ int main(){
     int n, m;
     read(m), read(n);
 
-    Virus virus[m];
-    SegTree tree(n);
+    static Virus virus[1000001];
+
+    static int inc[1000001], sum[1000001];
 
     for(int i = 0; i < m; i++){
         read(virus[i].l), read(virus[i].r), read(virus[i].k);
-        tree.modify(virus[i].l, virus[i].r, virus[i].k);
+        inc[virus[i].l - 1] += virus[i].k;
+        inc[virus[i].r] -= virus[i].k;
     }
 
+    sum[0] = inc[0];
+    for(int i = 1; i < n; i++){
+        sum[i] = sum[i - 1] + inc[i];
+    }
+
+    static SegTree tree(1000000, sum - 1);
+
     for(int i = 0; i < m; i++){
-        tree.modify(virus[i].l, virus[i].r, -virus[i].k);
-        printf("%d\n", tree.query_());
-        tree.modify(virus[i].l, virus[i].r, virus[i].k);
+        printf("%d\n", tree.query_(virus[i].l, virus[i].r, virus[i].k));
     }
 
     fclose(stdin);
