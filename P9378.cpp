@@ -2,7 +2,8 @@
 // Created by kibi on 23-9-30.
 //
 
-// TODO UKE
+// 23-10-28 update
+// 10-9 finish AC
 
 #include <bits/stdc++.h>
 using namespace std;
@@ -38,7 +39,7 @@ int main(){
         read(times[i]);
     }
 
-    static int arr[N / 2 + 5][N / 2 + 5];
+    static int arr[N + 5][N + 5];
     for(int i = 1; i <= m; i++){
         for(int j = 1; j <= n; j++){
             read(arr[i][j]);
@@ -53,7 +54,10 @@ int main(){
         for(int j = 1; j <= m; j++){
             for(int k = 1; k <= n; k++){
                 int now = arr[j][k];
-                if(!choose[now] && !vis[now]){
+                if(vis[now]){
+                    continue;
+                }
+                if(!choose[now]){
                     vis[now] = true;
                     break;
                 }else if(choose[now]){
@@ -76,6 +80,7 @@ int main(){
                     k++;
                 }
                 res[++use] = k;
+                vis[k] = true;
             }
             memcpy(ans + 1, res + 1, n * sizeof (int));
             break;
@@ -86,5 +91,5 @@ int main(){
     for(int i = 1; i < n - m; i++){
         printf("%d ", ans[i]);
     }
-    printf("%d\n", ans[n - m]);
+    printf("%d", ans[n - m]);
 }

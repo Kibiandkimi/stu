@@ -2,8 +2,6 @@
 // Created by kibi on 23-9-30.
 //
 
-// TODO not finish
-
 #include <bits/stdc++.h>
 using namespace std;
 
@@ -41,9 +39,11 @@ int main(){
 
     static int n;
     read(n);
+    //    n = 100000;
 
     static int raw_data[N + 5];
     for(int i = 1; i <= n; i++){
+        //        raw_data[i] = 1;
         read(raw_data[i]);
     }
 
@@ -74,7 +74,7 @@ int main(){
                 d[i][0][0] = max(d[i + 1][1][0], d[i + 1][0][0]);
                 d[i][0][1] = max({d[i][0][0], d[i + 1][1][1], d[i + 1][0][1]});
                 pre_f[i][0] = max(d[i][1][0], d[i][0][0]);
-                pre_f[i][1] = max(d[i][1][1], d[i][0][1]);
+                pre_f[i][1] = max({d[i][1][1], d[i][0][1], d[i][1][0], d[i][0][0]});
                 order_f[mid - i + 1] = i;
             }
 
@@ -87,7 +87,7 @@ int main(){
                 d[i][0][0] = max(d[i - 1][0][0], d[i - 1][1][0]);
                 d[i][0][1] = max({d[i][0][0], d[i - 1][1][1], d[i - 1][0][1]});
                 pre_g[i][0] = max(d[i][0][0], d[i][1][0]);
-                pre_g[i][1] = max(d[i][0][1], d[i][1][1]);
+                pre_g[i][1] = max({d[i][0][1], d[i][1][1], d[i][1][0], d[i][0][0]});
                 order_g[i - mid] = i;
             }
 
@@ -116,45 +116,27 @@ int main(){
 
             int it_l, it_r, sum;
 
-            for(it_l = 1, it_r = 1, sum = 0; it_l <= mid - l + 1 && it_r <= r - mid; it_r++){
-                while(pre_f[order_f[it_l]][0] - pre_f[order_f[it_l]][1] < pre_g[order_g[it_r]][0] - pre_g[order_g[it_r]][1]
-                       && it_l <= mid - l + 1){
-                    it_l++;
+            for(it_l = 1, it_r = 1, sum = 0; it_l <= mid - l + 1; it_l++){
+                while(pre_f[order_f[it_l]][0] - pre_f[order_f[it_l]][1] >= pre_g[order_g[it_r]][0] - pre_g[order_g[it_r]][1]
+                       && it_r <= r - mid){
+                    add(sum, g[order_g[it_r]][1]);
+                    it_r++;
                 }
-                if(it_l > mid - l + 1){
-                    break;
-                }
-                add(sum, g[order_g[it_r]][1]);
-                add(ans, sum);
-                add(ans, sub(f[order_f[it_l]][0], it_r));
-            }
-            it_l++;
-            while(it_l <= mid - l + 1){
                 add(ans, sum);
                 add(ans, sub(f[order_f[it_l]][0], it_r - 1));
-                it_l++;
             }
-
 
             // f0l + g1r < f1l + g0r
             // f0l - f1l < g0r - g1r
 
-            for(it_l = 1, it_r = 1, sum = 0; it_l <= mid - l + 1 && it_r <= r - mid; it_l++){
-                while(pre_f[order_f[it_l]][0] - pre_f[order_f[it_l]][1] >= pre_g[order_g[it_r]][0] - pre_g[order_g[it_r]][1] && it_r <= r - mid){
-                    it_r++;
+            for(it_l = 1, it_r = 1, sum = 0; it_r <= r - mid; it_r++){
+                while(pre_f[order_f[it_l]][0] - pre_f[order_f[it_l]][1] < pre_g[order_g[it_r]][0] - pre_g[order_g[it_r]][1]
+                       && it_l <= mid - l + 1){
+                    add(sum, f[order_f[it_l]][1]);
+                    it_l++;
                 }
-                if(it_r > r - mid){
-                    break;
-                }
-                add(sum, f[order_f[it_l]][1]);
-                add(ans, sum);
-                add(ans, sub(g[order_g[it_r]][0], it_l));
-            }
-            it_r++;
-            while(it_r <= r - mid){
                 add(ans, sum);
                 add(ans, sub(g[order_g[it_r]][0], it_l - 1));
-                it_r++;
             }
         }
 

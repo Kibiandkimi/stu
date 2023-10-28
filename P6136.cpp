@@ -223,8 +223,7 @@ int main(){
     class Trie{
         class Node{
         public:
-            int sum;
-            int ls, rs;
+            int ls, rs, sum;
 
             Node():sum(0), ls(0), rs(0){};
         };
@@ -235,16 +234,22 @@ int main(){
     public:
         void insert(int x, int val = 1){
             static bool num[35];
-            static int i;
             memset(num, 0, sizeof num);
-            for(i = 0; x; i++){
+            for(int i = 0; x; i++){
                 num[i] = x & 1;
                 x >>= 1;
             }
             Node *now = &root;
-            for(i = 30; i >= 0; i--){
+            for(int i = 29; i >= 0; i--){
 
                 if(now->sum == -1){
+
+                    if(val == -1){
+                        now->sum = 0;
+                        now->ls = 0;
+                        return;
+                    }
+
                     int temp = now->ls;
                     now->ls = 0;
                     if(temp & (1 << i)){
@@ -253,6 +258,9 @@ int main(){
                         data[now->rs].sum = -1;
                         if(!i){
                             data[now->rs].sum = 1;
+                            if(data[now->rs].ls != 0){ // yes
+                                                        //                                throw exception();
+                            }
                         }
                     }else{
                         now->ls = cnt++;
@@ -260,6 +268,9 @@ int main(){
                         data[now->ls].sum = -1;
                         if(!i){
                             data[now->ls].sum = 1;
+                            if(data[now->ls].ls != 0){ // yes
+                                                        //                                throw exception();
+                            }
                         }
                     }
                     now->sum = 1;
@@ -271,7 +282,7 @@ int main(){
                         now->ls = cnt++;
                         int temp = 0;
                         for(int j = 0; j < i; j++){
-                            temp += num[j] * Tools::pow(2, j);
+                            temp += (int)num[j] * (1 << j);
                         }
                         data[now->ls].ls = temp;
                         data[now->ls].sum = -1;
@@ -286,7 +297,7 @@ int main(){
                         now->rs = cnt++;
                         int temp = 0;
                         for(int j = 0; j < i; j++){
-                            temp += num[j] * Tools::pow(2, j);
+                            temp += (int)num[j] * (1 << j);
                         }
                         data[now->rs].ls = temp;
                         data[now->rs].sum = -1;
@@ -298,6 +309,13 @@ int main(){
                     now = &data[now->rs];
                 }
             }
+
+            if(now->sum == -1){
+                now->sum = Tools::abs(now->sum) + val;
+                return;
+                //                throw exception();
+            }
+
             now->sum += val;
         }
 
@@ -309,7 +327,7 @@ int main(){
                 x >>= 1;
             }
             Node *now = &root;
-            for(i = 30, rnk = 1; i >= 0; i--){
+            for(i = 29, rnk = 1; i >= 0; i--){
                 if(now->sum == -1){
                     return rnk;
                 }
@@ -326,9 +344,15 @@ int main(){
         int query_num_by_rnk(int rnk){
             int res = 0;
             Node *now = &root;
-            for(int i = 30; i >= 0; i--){
+            for(int i = 29; i >= 0; i--){
                 if(now->sum == -1){
-                    return res + now->ls;
+                    if(now->ls < 0){ // yes
+                                      //                        throw exception();
+                    }
+                    return res + now->ls; // now->ls < 0
+                }
+                if(rnk <= 0 || rnk > now->sum){ // rnk <= 0 || rnk > now->sum
+                                                 //                    throw exception();
                 }
                 if(rnk <= Tools::abs(data[now->ls].sum)){
                     now = &data[now->ls];
@@ -349,7 +373,7 @@ int main(){
                 x >>= 1;
             }
             Node *now = &root;
-            for(i = 30; i >= 0; i--){
+            for(i = 29; i >= 0; i--){
                 if(now->sum == -1){
                     return 1;
                 }
@@ -373,6 +397,8 @@ int main(){
         }
 
     };
+
+    //    freopen("t.in", "r", stdin);
 
     auto read = Tools::read;
 
@@ -403,13 +429,13 @@ int main(){
                 last = trie.query_rnk_by_num(x);
                 break;
             case 4:
-                last = trie.query_num_by_rnk(x);
+                last = trie.query_num_by_rnk(x); // last < 0
                 break;
             case 5:
                 last = trie.query_pre(x);
                 break;
             case 6:
-                last = trie.query_suc(x);
+                last = trie.query_suc(x); // last < 0
                 break;
             default:
                 throw exception();
@@ -417,7 +443,6 @@ int main(){
         if(last < 0){
             printf("%c", 'A' + opt - 1);
             return 0;
-            throw exception();
         }
         if(opt > 2){
             ans ^= last;
@@ -425,6 +450,8 @@ int main(){
     }
 
     printf("%d\n", ans);
+
+    //    fclose(stdin);
 
 }
  *
