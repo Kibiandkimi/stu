@@ -1,6 +1,9 @@
 //
 // Created by kibi on 23-10-31.
 //
+
+// TODO first to understand nxt to finish
+
 #include <bits/stdc++.h>
 using namespace std;
 
@@ -65,11 +68,11 @@ int main(){
 
     int ans = 0;
     deque<pair<int, int>> q;
-    for(int i = 0, lp = 1; i <= n; i++){
+    for(int i = 0, lp = 0; i <= n; i++){
         while(!q.empty() && q.front().second < i){
             q.pop_front();
         }
-        int id = (!i) ? 0 : l[i - 1];
+        int id = ((!i) ? 0 : l[i - 1]) + k + 1;
         if(id > now){
             ans = max(ans,  (i == n ? -n : mx1[i]) - (!i ? 0 : sum1[i - 1]));
         }else{
