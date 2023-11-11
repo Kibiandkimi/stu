@@ -47,7 +47,7 @@ int main(){
         }
 
         Edge* begin(int u){
-            return head[mp[u]];
+            return mp.find(u) == mp.end() ? nullptr : head[mp[u]];
         }
         /*
         ~Graph(){
@@ -69,8 +69,8 @@ int main(){
         int cnt_col;
         Node *rt;
         Graph *graph;
-        vector<Node> node;
-        map<int, int> mp;
+        //        vector<Node*> node;
+        map<int, Node*> mp;
 
         void dfs(Node *u){
             static int cnt;
@@ -79,14 +79,15 @@ int main(){
             stk.emplace(u->id);
             for(auto i = graph->begin(u->id); i; i = i->nxt){
                 if(mp.find(i->v) == mp.end()){
-                    mp[i->v] = (int)node.size();
-                    node.emplace_back(i->v, 0, 0, 0, false);
+                    mp[i->v] = new Node{i->v, 0, 0, 0, false};
+                    /*                    mp[i->v] = (int)node.size();
+                    node.emplace_back(new Node{i->v, 0, 0, 0, false});*/
                 }
-                if(!node[mp[i->v]].dfn){
-                    dfs(&node[mp[i->v]]);
-                    u->low = min(u->low, node[mp[i->v]].low);
-                }else if(node[mp[i->v]].vis){
-                    u->low = min(u->low, node[mp[i->v]].dfn);
+                if(!mp[i->v]->dfn){
+                    dfs(mp[i->v]);
+                    u->low = min(u->low, mp[i->v]->low);
+                }else if(mp[i->v]->vis){
+                    u->low = min(u->low, mp[i->v]->dfn);
                 }
             }
             if(u->dfn == u->low){
@@ -94,8 +95,8 @@ int main(){
                 do {
                     x = stk.top();
                     stk.pop();
-                    node[mp[x]].vis = false;
-                    node[mp[x]].col = cnt_col;
+                    mp[x]->vis = false;
+                    mp[x]->col = cnt_col;
                 } while(x != u->id);
                 cnt_col++;
             }
@@ -103,14 +104,16 @@ int main(){
 
     public:
         Tarjan(int rt, Graph *graph):graph(graph), cnt_col(0){
-            mp[rt] = (int)node.size();
-            node.emplace_back(rt, 0, 0, 0, false);
-            this->rt = &node.back();
+            mp[rt] = new Node{rt, 0, 0, 0, false};
+            /*            mp[rt] = (int)node.size();
+            node.emplace_back(new Node{rt, 0, 0, 0, false});*/
+            this->rt = mp[rt];
             dfs(this->rt);
         }
 
         Node* get_node(int u){
-            return &node[mp[u]];
+            return mp[u];
+            //            return node[mp[u]];
         }
 
         friend class Work;
