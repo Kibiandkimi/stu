@@ -489,3 +489,262 @@ int main(){
 }
  *
  * */
+
+// 23-11-12
+
+// 90pts
+
+/*
+ *
+#include <bits/stdc++.h>
+using namespace std;
+
+int main(){
+    static mt19937 rnd(random_device{}());
+    static const int Mod = 998244353;
+    using ll = long long;
+
+    class Tools{
+    public:
+        static void read(int &x){
+            int s = 0, w = 1, c = getchar();
+            while(c < '0' || '9' < c){
+                if(c == '-'){
+                    w = -1;
+                }
+                c = getchar();
+            }
+            while('0' <= c && c <= '9'){
+                s = s * 10 + c - '0';
+                c = getchar();
+            }
+            x = s * w;
+        }
+
+        static void sub(int &x, int v){
+            x = (int)(((ll)x * v) % Mod);
+        }
+
+        static void add(int &x, int v){
+            x = (x + v) % Mod;
+        }
+    };
+
+    auto read = Tools::read;
+    static auto sub = Tools::sub;
+    static auto add = Tools::add;
+
+    freopen("t.in", "r", stdin);
+
+    static int n;
+    read(n);
+
+    int raw_data[n];
+    for(auto &i : raw_data){
+        read(i);
+    }
+
+    class Index{
+    public:
+        bool type; // 0->base 1->func
+        int index;
+    };
+
+    class BaseFunc{
+    public:
+        int id, x, v;
+
+        BaseFunc(int id, int x, int v):id(id), x(x), v(v){}
+    };
+
+    class Func{
+    public:
+        int id{}, num_of_func{};
+        long long sum{};
+        vector<int> id_of_func;
+    };
+
+    static vector<BaseFunc> myBaseFunc;
+    static vector<Func> myFunc;
+
+    int m;
+    read(m);
+    Index index[m];
+    int raw_in[m];
+    static int *in = raw_in;
+    memset(raw_in, 0, sizeof raw_in);
+    for(int i = 0; i < m; i++){
+        int type;
+        read(type);
+        if(type == 1){
+            int pos, val;
+            read(pos), read(val);
+            myBaseFunc.emplace_back(i + 1, pos, val);
+            index[i] = {false, (int)myBaseFunc.size() - 1};
+        }else if(type == 2){
+            int val;
+            read(val);
+            myBaseFunc.emplace_back(i + 1, -1, val);
+            index[i] = {false, (int)myBaseFunc.size() - 1};
+        }else if(type == 3){
+            int num;
+            read(num);
+            myFunc.emplace_back();
+            Func &now = myFunc.back();
+            now.id = i + 1;
+            now.num_of_func = num;
+            now.id_of_func.resize(num);
+            for(auto &j : now.id_of_func){
+                read(j);
+                //                now.sum += index[j - 1].type ? myFunc[index[j - 1].index].sum : 1;
+                in[j - 1]++;
+            }
+            reverse(now.id_of_func.begin(), now.id_of_func.end());
+            index[i] = {true, (int)myFunc.size() - 1};
+        }
+    }
+
+    myBaseFunc.shrink_to_fit();
+    myFunc.shrink_to_fit();
+
+    class Run{
+    public:
+        class OptFunc{
+        public:
+            vector<pair<int, int>> add;
+            int p;
+
+            OptFunc():p(1){}
+        };
+
+        vector<OptFunc> optFunc;
+        vector<bool> opt;
+        int *data;
+        Index *index;
+        int flag;
+
+        Run(int num, int *data, Index *index):
+                                                optFunc(num),
+                                                opt(num, false),
+                                                data(data),
+                                                index(index),
+                                                flag(1){}
+
+        void optimize(int id){
+            vector<int> vt;
+            auto change = new int [n];
+            auto vis = new int [n];
+            int snd = rnd();
+            auto *now = &myFunc[index[id - 1].index];
+            bool sum_flag = !now->sum;
+            for(auto &i : now->id_of_func){
+                if(index[i - 1].type && !opt[index[i - 1].index]){
+                    optimize(i);
+                }
+                if(index[i - 1].type){
+                    auto *nxt = &optFunc[index[i - 1].index];
+                    for(auto &j : nxt->add){
+                        int val = j.second;
+                        sub(val, optFunc[index[id - 1].index].p);
+                        if(vis[j.first] != snd){
+                            vt.emplace_back(j.first);
+                            change[j.first] = 0;
+                            vis[j.first] = snd;
+                        }
+                        add(change[j.first], val);
+                    }
+                    sub(optFunc[index[id - 1].index].p, nxt->p);
+                    myFunc[index[id - 1].index].sum += (sum_flag ? myFunc[index[i - 1].index].sum : 0);
+                    in[i - 1]--;
+                    if(!in[i - 1] || myFunc[index[id - 1].index].sum <= 10 && myFunc[index[id - 1].index].sum > 0){
+                        free(i);
+                    }
+                }else{
+                    auto *nxt = &myBaseFunc[index[i - 1].index];
+                    if(nxt->x < 0){
+                        sub(optFunc[index[id - 1].index].p, nxt->v);
+                    }else{
+                        int val = nxt->v;
+                        sub(val, optFunc[index[id - 1].index].p);
+                        if(vis[nxt->x - 1] != snd) {
+                            vt.emplace_back(nxt->x - 1);
+                            change[nxt->x - 1] = 0;
+                            vis[nxt->x - 1] = snd;
+                        }
+                        add(change[nxt->x - 1], val);
+                    }
+                    myFunc[index[id - 1].index].sum += (sum_flag ? 1 : 0);
+                }
+            }
+            for(auto &i : vt){
+                optFunc[index[id - 1].index].add.emplace_back(i, change[i]);
+            }
+            optFunc[index[id - 1].index].add.shrink_to_fit();
+            opt[index[id - 1].index] = true;
+
+            delete[] change;
+            delete[] vis;
+            //            vector<int>{}.swap(now->id_of_func);
+        }
+
+        void run(int id){
+            if(!index[id - 1].type){
+                BaseFunc *now = &myBaseFunc[index[id - 1].index];
+                if(now->x < 0){
+                    sub(flag, now->v);
+                }else{
+                    int val = now->v;
+                    sub(val, flag);
+                    add(data[now->x - 1], val);
+                }
+            }else{
+                if(!opt[index[id - 1].index]){
+                    optimize(id);
+                }
+                auto *now = &optFunc[index[id - 1].index];
+                for(auto &i : now->add){
+                    int val = i.second;
+                    sub(val, flag);
+                    add(data[i.first], val);
+                }
+                sub(flag, now->p);
+                in[id - 1]--;
+                if(!in[id - 1] || myFunc[index[id - 1].index].sum <= 10 && myFunc[index[id - 1].index].sum > 0){
+                    free(id);
+                }
+            }
+        }
+
+        void free(int id){
+            optFunc[index[id - 1].index] = OptFunc();
+            opt[index[id - 1].index] = false;
+        }
+    };
+
+    int pre[n];
+    memset(pre, 0, sizeof pre);
+
+    Run run((int)myFunc.size(), pre, index);
+
+    int q;
+    read(q);
+
+    int question[q];
+
+    for(auto &i : question){
+        read(i);
+        in[i - 1]++;
+    }
+    for(int i = q - 1; i >= 0; i--){
+        run.run(question[i]);
+    }
+
+    for(int i = 0; i < n; i++){
+        sub(raw_data[i], run.flag);
+        add(raw_data[i], pre[i]);
+        printf("%d ", raw_data[i]);
+    }
+    printf("\n");
+}
+ *
+ * */

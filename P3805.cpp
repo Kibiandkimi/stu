@@ -129,3 +129,70 @@ namespace Second{
         return i;
     }
 }
+
+// 23-11-11
+
+/*
+#include <bits/stdc++.h>
+using namespace std;
+
+int main(){
+    auto read_str = [](vector<char> &x){
+        auto judge = [](int c){
+            return 'a' <= c && c <= 'z';
+        };
+        int c = getchar();
+        while(!judge(c)){
+            c = getchar();
+        }
+        while(judge(c)){
+            x.emplace_back(c);
+            c = getchar();
+        }
+        x.shrink_to_fit();
+    };
+
+    vector<char> raw, s;
+    read_str(raw);
+
+    s.reserve(2 * raw.size() + 1);
+
+    s.emplace_back('#');
+    for(auto &i : raw){
+        s.emplace_back(i);
+        s.emplace_back('#');
+    }
+
+    int d[s.size()], ans = 0;
+    memset(d, 0, sizeof d);
+    for(int i = 0, l = 0, r = -1; i < s.size(); i++){
+        if(i > r){
+            for(int j = 0; j <= min((int)s.size() - i - 1, i); j++){
+                if(s[i - j] != s[i + j]){
+                    break;
+                }
+                d[i] = j;
+            }
+        }else{
+            int i_ = l + (r - i);
+            if(i_ - d[i_] > l){
+                d[i] = d[i_];
+            }else{
+                for(int j = r - i; j <= min((int)s.size() - i - 1, i); j++){
+                    if(s[i - j] != s[i + j]){
+                        break;
+                    }
+                    d[i] = j;
+                }
+            }
+        }
+        if(r < i + d[i]){
+            r = i + d[i];
+            l = i - d[i];
+        }
+        ans = max(ans, d[i]);
+    }
+
+    printf("%d\n", ans);
+}
+*/
