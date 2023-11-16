@@ -88,3 +88,132 @@ int main(){
 
     return 0;
 }
+
+/*
+ *
+#include <bits/stdc++.h>
+using namespace std;
+
+int main(){
+    auto read = [](initializer_list<int*> x){
+        auto read = [](int &x){
+            int s = 0, w = 1, c = getchar();
+            while(c < '0' || '9' < c){
+                if(c == '-'){
+                    w = -1;
+                }
+                c = getchar();
+            }
+            while('0' <= c && c <= '9'){
+                s = s * 10 + c - '0';
+                c = getchar();
+            }
+            x = s * w;
+        };
+
+        for(auto &i : x){
+            read(*i);
+        }
+    };
+
+    auto read_str = [](int &x){
+        auto judge = [](int c){
+            return c == 'M' || c == 'A';
+        };
+        int c = getchar();
+        while(!judge(c)){
+            c = getchar();
+        }
+        x = c;
+    };
+
+    int n, q;
+    read({&n, &q});
+
+    int val[n];
+    for(auto &i : val){
+        read({&i});
+    }
+
+    int b[n], siz = (int)sqrt(n);
+    int tag[siz + 1];
+    memcpy(b, val, sizeof b);
+    memset(tag, 0, sizeof tag);
+    for(int i = 0, cnt = 0; i < n; i += siz){
+        sort(b + cnt * siz, b + cnt * siz + siz);
+        cnt++;
+    }
+    if(siz * siz < n) {
+        sort(b + siz * siz, b + n);
+    }
+
+    while(q--){
+        int opt, l, r, v, ans, ll, rr;
+        read_str(opt);
+        read({&l, &r, &v});
+        l--, r--;
+        switch(opt){
+            case 'M':
+                ll = l, rr = min((l / siz + 1) * siz, r + 1) - 1;
+                if((l + 1) % siz != 0){
+                    for(int i = ll; i <= rr; i++){
+                        val[i] += v;
+                    }
+                    for(int i = (l / siz) * siz; i < min((l / siz + 1) * siz, n); i++){
+                        b[i] = val[i];
+                    }
+                    sort(b + (l / siz) * siz, b + min((l / siz + 1) * siz, n));
+                    ll = rr + 1;
+                }
+                for(int i = ll; i + siz <= r + 1; i += siz){
+                    tag[i / siz] += v;
+                    ll += siz;
+                }
+                if(ll <= r){
+                    for(int i = ll; i <= r; i++){
+                        val[i] += v;
+                    }
+                    rr = min(n, ll + siz);
+                    for(int i = ll; i < rr; i++){
+                        b[i] = val[i];
+                    }
+                    sort(b + ll, b + rr);
+                }
+                break;
+            case 'A':
+                ll = l, rr = min((l / siz + 1) * siz, r + 1) - 1, ans = 0;
+                if((l + 1) % siz != 0){
+                    for(int i = ll; i <= rr; i++){
+                        val[i] + tag[i / siz] >= v ? ans++ : ans;
+                    }
+                    ll = rr + 1;
+                }
+                for(int i = ll; i + siz <= r + 1; i += siz){
+                    int lll = i, rrr = min(n - 1, i + siz - 1);
+                    int res = rrr + 1;
+                    while(lll <= rrr){
+                        int mid = (lll + rrr) >> 1;
+                        if(v <= b[mid] + tag[i / siz]){
+                            res = mid;
+                            rrr = mid - 1;
+                        }else{
+                            lll = mid + 1;
+                        }
+                    }
+                    ans += min(n - 1, i + siz - 1) - res + 1;
+                    ll += siz;
+                }
+                if(ll <= r){
+                    for(int i = ll; i <= r; i++){
+                        val[i] + tag[i / siz] >= v ? ans++ : ans;
+                    }
+                }
+                printf("%d\n", ans);
+                break;
+            default:
+                throw runtime_error("Error operation!");
+        }
+    }
+}
+ *
+ * */
