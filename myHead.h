@@ -7,6 +7,19 @@
 
 #include <bits/stdc++.h>
 
+using std::vector, std::pair, std::runtime_error;
+using ll = long long;
+
+static const int Mod = 1000000007;
+
+void add(int &x, int y){
+    x = (x + y) % Mod;
+}
+
+int sub(int x, int y){
+    return (int)((ll)x * y);
+}
+
 void read(int &x){
     int s = 0, w = 1, c = getchar();
     while(c < '0' || '9' < c){
@@ -34,39 +47,28 @@ void read(long long &x){
     x = s * w;
 }
 
-
-//TODO 指针版graph
 const int Size = 1000005;
 static const int MaxN = 500005;
-class Graph {
-    int head[Size / 2], nxt[Size], to[Size], tot;
-//    Size / 2 ??
+class Graph{
+    class Edge{
+    public:
+        int v, w;
+        Edge *nxt;
+    };
+
+    std::vector<Edge*> head;
 
 public:
-    /*
-    Graph() {
-        //         are these necessary?
-        memset(head, 0, sizeof head);
-        memset(to, 0, sizeof to);
-        memset(nxt, 0, sizeof nxt);
-        tot = 0;
+    explicit Graph(int n):head(n + 1, nullptr){}
+
+    void add_edge(int u, int v, int w, bool flag = false){
+        head[u] = new Edge{v, w, head[u]};
+
+        flag ? add_edge(v, u, w) : (void)0;
     }
-     */
-    void addEdge(int u, int v, bool flag = true) {
-        to[++tot] = v, nxt[tot] = head[u], head[u] = tot;
-        if (!flag) {
-            return;
-        }
-        to[++tot] = u, nxt[tot] = head[v], head[v] = tot;
-    }
-    int begin(int x) {
-        return head[x];
-    }
-    int next(int x) {
-        return nxt[x];
-    }
-    int get(int x) {
-        return to[x];
+
+    Edge* begin(int u){
+        return head[u];
     }
 };
 
@@ -77,9 +79,9 @@ class Lca {
         for (int i = 1; (1 << i) <= dep[u]; i++) {
             fa[u][i] = fa[fa[u][i - 1]][i - 1];
         }
-        for (int i = g->begin(u); i; i = g->next(i)) {
+        for (auto i = g->begin(u); i; i = i->nxt) {
             static int v;
-            v = g->get(i);
+            v = i->v;
             if (v != fa[u][0]) {
                 fa[v][0] = u;
                 dep[v] = dep[u] + 1;
@@ -252,6 +254,8 @@ public:
 };
 
 // TODO classes Trie and AC are not complete, they may have some mistake, maybe another way to make it
+// TODO class not update after change Graph
+// TODO why does Trie require Graph
 
 class Trie{
     Graph g{};
@@ -404,6 +408,60 @@ public:
     }
 };
 
+class KMP {
+    class Pat {
+        const size_t len, n;
+        const vector<int> str;
+        vector<vector<int>> nxt;
+
+        class Res {
+        public:
+            int num{0};
+            vector<int> pos{vector<int>(0)};
+        };
+
+    public:
+        Pat(vector<int> str, int n) : str(str),
+                                      n(n),
+                                      len(str.size()),
+                                      nxt(len + 1, vector<int>(n)) {
+            if (str.empty()) {
+                throw runtime_error("ErrorSize!");
+            }
+
+            int pre = 0;
+            for (int i = 0; i < len; i++) {
+                for (int j = 0; j < n; j++) {
+                    nxt[i][j] = nxt[pre][j];
+                }
+                nxt[i][str[i]] = i + 1;
+                pre = nxt[pre][str[i]];
+            }
+            for (int j = 0; j < n; j++) {
+                nxt[len][j] = nxt[pre][j];
+            }
+        }
+
+        Res search(vector<int> txt) {
+            size_t len_txt = txt.size();
+            int stat = 0;
+            Res res;
+            for (int i = 0; i < len_txt; i++) {
+                if (txt[i] >= n) {
+                    stat = 0;
+                } else {
+                    stat = nxt[stat][txt[i]];
+                    if (stat == len) {
+                        res.num++;
+                        res.pos.emplace_back(i);
+                    }
+                }
+            }
+            return res;
+        }
+    };
+};
+
 class Manacher{
 
     int readStr(char *c){
@@ -452,6 +510,50 @@ public:
         main();
     }
 
+};
+
+class Matrix{
+    size_t n, m;
+    vector<vector<int>> data;
+
+public:
+    Matrix(size_t n, size_t m):n(n), m(m), data(n, vector<int>(m)){}
+    explicit Matrix(size_t n):n(n), m(n), data(n, vector<int>(n)){
+        for(int i = 0; i < n; i++){
+            data[i][i] = 1;
+        }
+    }
+    explicit Matrix(vector<vector<int>> &x):data(x), n(x.size()), m(x.front().size()){}
+
+    Matrix operator * (const Matrix &b){
+        if(m != b.n){
+            throw runtime_error("Error sub Matrix with wrong length!");
+        }
+        Matrix res(n, b.m);
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < m; j++) {
+                for (int k = 0; k < m; k++) {
+                    add(res.data[i][j], sub(data[i][k], b.data[k][j]));
+                }
+            }
+        }
+        return res;
+    }
+
+    void operator *= (const Matrix &b){
+        *this = (*this) * b;
+    }
+
+    pair<int, int> size(){
+        return {n, m};
+    }
+
+    int get(int x, int y){
+        if(x >= n || y >= m || x < 0 || y < 0){
+            throw runtime_error("Error with wrong index!");
+        }
+        return data[x][y];
+    }
 };
 
 #endif//STU_MYHEAD_H
