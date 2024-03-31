@@ -556,6 +556,35 @@ public:
     }
 };
 
+// not finish
+/*
+class Splay{
+    class Node{
+    public:
+        Node *fa, *ls, *rs;
+        int val, cnt, siz;
+
+        void update(){
+            siz = cnt + ls->siz + rs->siz;
+        }
+
+        bool isLson() const{
+            return fa ? fa->ls == this : false;
+        }
+    };
+
+    Node *rt{nullptr};
+
+public:
+    void spin(Node *u){
+        if(u->fa == nullptr){
+            throw runtime_error("Already been root!");
+        }
+
+    }
+};
+ */
+
 class SparseTable{
     vector<int> f[21], lg;
 
