@@ -73,3 +73,75 @@ void read(int &x){
     }
     x = s * w;
 }
+
+// 2024-4-11
+/*
+#include <bits/stdc++.h>
+using namespace std;
+
+class MonotonicQueue{
+    deque<pair<int, int>> q;
+    int cnt{0};
+
+public:
+    template<typename Cmp>
+    void push(int v, Cmp cmp){
+        while(!q.empty() && cmp(q.back().second, v)){
+            q.pop_back();
+        }
+        q.emplace_back(++cnt, v);
+    }
+
+    void update(int v){
+        while(!q.empty() && q.front().first <= v){
+            q.pop_front();
+        }
+    }
+
+    int get() const{
+        return q.front().second;
+    }
+};
+
+int main(){
+    int n, k;
+    cin >> n >> k;
+    int data[n];
+    for(auto &i : data){
+        cin >> i;
+    }
+
+    auto less = [](const int &a, const int &b){
+        return a <= b;
+    };
+    auto more = [](const int &a, const int &b){
+        return a >= b;
+    };
+
+    MonotonicQueue q_min, q_max;
+    for(int i = 0; i < k; i++){
+        q_min.push(data[i], more);
+        q_max.push(data[i], less);
+    }
+
+    int ans[n - k + 1][2];
+    for(int i = k; i < n; i++){
+        ans[i - k][0] = q_min.get();
+        ans[i - k][1] = q_max.get();
+        q_min.push(data[i], more);
+        q_max.push(data[i], less);
+        q_min.update(i - k + 1);
+        q_max.update(i - k + 1);
+    }
+    ans[n - k][0] = q_min.get();
+    ans[n - k][1] = q_max.get();
+    for(int i = 0; i <= n - k; i++){
+        printf("%d ", ans[i][0]);
+    }
+    printf("\n");
+    for(int i = 0; i <= n - k; i++){
+        printf("%d ", ans[i][1]);
+    }
+    printf("\n");
+}
+ * */

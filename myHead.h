@@ -556,4 +556,28 @@ public:
     }
 };
 
+class MonotonicQueue{
+    std::deque<pair<int, int>> q;
+    int cnt{0};
+
+public:
+    template<typename Cmp>
+    void push(int v, Cmp cmp){
+        while(!q.empty() && cmp(q.back().second, v)){
+            q.pop_back();
+        }
+        q.emplace_back(++cnt, v);
+    }
+
+    void update(int v){
+        while(!q.empty() && q.front().first <= v){
+            q.pop_front();
+        }
+    }
+
+    int get() const{
+        return q.front().second;
+    }
+};
+
 #endif//STU_MYHEAD_H
