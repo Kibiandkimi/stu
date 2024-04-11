@@ -556,6 +556,36 @@ public:
     }
 };
 
+class SparseTable{
+    vector<int> f[21], lg;
+
+public:
+    template<typename Cmp>
+    SparseTable(int n, const int *data, Cmp cmp){
+        for(auto &i : f){
+            i.resize(n);
+        }
+        for(int i = 0; i < n; i++){
+            f[0][i] = data[i];
+        }
+        for(int i = 1; i <= 20; i++){
+            for(int j = 0; j + (1 << i) - 1 < n; j++){
+                f[i][j] = cmp(f[i - 1][j], f[i - 1][j + (1 << (i - 1))]);
+            }
+        }
+        lg.resize(n + 1);
+        for(int i = 2; i <= n; i++){
+            lg[i] = lg[i / 2] + 1;
+        }
+    }
+
+    template<typename Cmp>
+    int query(int l, int r, Cmp cmp){
+        const int &t = lg[r - l + 1];
+        return cmp(f[t][l - 1], f[t][r - (1 << t)]);
+    }
+};
+
 class MonotonicQueue{
     std::deque<pair<int, int>> q;
     int cnt{0};
