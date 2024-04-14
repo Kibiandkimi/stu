@@ -84,27 +84,19 @@ int main(){
     }
 
     int ans = 0;
-    bool raw_vis[n], raw_is_ans[n];
-    int raw_tem_vis[n];
-    auto vis = raw_vis - 1, is_ans = raw_is_ans - 1;
-    auto tem_vis = raw_tem_vis - 1;
-    memset(raw_vis, 0, sizeof raw_vis);
-    memset(raw_is_ans, 0, sizeof raw_is_ans);
+    int raw_dis_to_ans[n];
+    auto dis_to_ans = raw_dis_to_ans - 1;
+    memset(raw_dis_to_ans, 0, sizeof raw_dis_to_ans);
     while(!q.empty()){
         int now = q.top();
         q.pop();
-        while(!q.empty() && vis[now]){
-            now = q.top();
-            q.pop();
+        if(dis_to_ans[now]){
+            continue;
         }
-        if(vis[now]){
-            break;
-        }
-
         bool flag = false;
         for(int i = 0; i < k; i++){
             now = fa[now];
-            if(is_ans[now]){
+            if(dis_to_ans[now] > i + 1){
                 flag = true;
                 break;
             }
@@ -112,32 +104,15 @@ int main(){
         if(flag){
             continue;
         }
-        vis[now] = true;
-        tem_vis[now] = now;
-        is_ans[now] = true;
         ans++;
 
         auto dfs2 = [&](int x){
-            if(x == 1){
-                return ;
+            int step = k + 1;
+            while(x != 1 && step){
+                dis_to_ans[x] = max(dis_to_ans[x], step--);
+                x = fa[x];
             }
-            stack<tuple<int, int>> stk;
-            vis[fa[x]] = true;
-            tem_vis[fa[x]] = x;
-            stk.emplace(fa[x], 1);
-            while(!stk.empty()){
-                auto [u, step] = stk.top();
-                stk.pop();
-                if(step < k){
-                    for(auto i = graph.begin(u); i; i = i->nxt){
-                        if(tem_vis[i->v] != x && !is_ans[i->v]){
-                            stk.emplace(i->v, step + 1);
-                            vis[i->v] = true;
-                            tem_vis[i->v] = x;
-                        }
-                    }
-                }
-            }
+            dis_to_ans[x] = max(dis_to_ans[x], step);
         };
         dfs2(now);
     }
