@@ -77,8 +77,12 @@ int main(){
         }
 
         f[now][0] = sum1, f[now][1] = sum0 + val[now];
-        if(g1.begin(now) != nullptr) {
-            in[g1.begin(now)->v]--;
+        auto nxt = g1.begin(now);
+        if(nxt != nullptr) {
+            in[nxt->v]--;
+            if(!in[nxt->v]){
+                q.emplace(nxt->v);
+            }
         }else{
             ans += max(f[now][0], f[now][1]);
         }
@@ -100,7 +104,7 @@ int main(){
 
             in[i]--;
             f[i][0] = sum1, f[i][1] = sum0 + val[i];
-            auto tem = f[i][1];
+            auto tem1 = f[i][1]/*, tem2 = f[pre][0]*/;
             f[i][1] = f[i][0];
 
             for(auto j = g1.begin(i); j->v != i; j = g1.begin(j->v)){
@@ -115,20 +119,18 @@ int main(){
 
             res = max(f[pre][0], f[pre][1]);
 
-            f[i][1] = tem;
+            f[i][1] = tem1;
 
-            for(auto j = g1.begin(i); g1.begin(j->v)->v != i; j = g1.begin(j->v)){
+            for(auto j = g1.begin(i); j->v != i; j = g1.begin(j->v)){
                 sum1 = sum0 = 0;
                 for(auto k = g2.begin(j->v); k; k = k->nxt){
                     sum1 += max(f[k->v][0], f[k->v][1]);
                     sum0 += f[k->v][0];
                 }
                 f[j->v][0] = sum1, f[j->v][1] = sum0 + val[j->v];
-                pre = j->v;
             }
 
-            res = max({res, f[pre][0], f[pre][1]});
-
+            res = max({res, f[pre][0], f[pre][1] - val[pre]});
             ans += res;
         }
     }
