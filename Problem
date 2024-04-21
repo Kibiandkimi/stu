@@ -19,6 +19,7 @@ TODO 数论
 cmp中的类型要和数组保持一致，别 long long 变 int，而且这种情况没有警告
 T365455 sort的cmp这样写竟然不会有问题，Question类继承Node，把cmp也继承了，cmp中类型是Node，Question排序用cmp，也可以排
 重链剖分 Heavy path decomposition
+重心 barycentre
 
 '''
 P1439*, P1025, P5020, P1941*, P1006, P1064, P1091, P5664*, P1880*, P1070**, P1140, P4310, P5017*, P8564*, P1052, P4138,
