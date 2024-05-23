@@ -1,7 +1,6 @@
 //
-// Created by Lenovo on 24-5-16.
+// Created by Kibi on 24-5-16.
 //
-// TODO 24-5-16
 #include <bits/stdc++.h>
 using namespace std;
 
@@ -57,21 +56,22 @@ int main(){
                     vis[p][q] = i;
                 }
             }
-            for (int j = 0; j < m; j++){
-                if(vis[n - 1][j] == i){
-                    res[i][0] = j;
-                    break;
-                }
+        }
+        vis[0][i] = i;
+        for (int j = 0; j < m; j++){
+            if(vis[n - 1][j] == i){
+                res[i][0] = j;
+                break;
             }
-            for (int j = m - 1; j >= 0; j--){
-                if(vis[n - 1][j] == i){
-                    res[i][1] = j;
-                    break;
-                }
+        }
+        for (int j = m - 1; j >= 0; j--){
+            if(vis[n - 1][j] == i){
+                res[i][1] = j;
+                break;
             }
-            for(int j = 0; j < m; j++){
-                ava[j] |= (vis[n - 1][j] == i);
-            }
+        }
+        for(int j = 0; j < m; j++){
+            ava[j] |= (vis[n - 1][j] == i);
         }
     }
 
