@@ -1,7 +1,6 @@
 //
-// Created by Lenovo on 24-4-18.
+// Created by Kibi on 24-4-18.
 //
-// TODO 24-4-21
 #include <bits/stdc++.h>
 using namespace std;
 
@@ -92,6 +91,7 @@ int main(){
                         res = now;
                     }
                     fa > -1 ? siz[fa] += siz[now] : 0;
+                    fa > -1 ? mxp[fa] = max(siz[now], mxp[fa]) : 0;
                     break;
                 default:
                     throw runtime_error("Error state!");
