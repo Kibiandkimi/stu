@@ -1,7 +1,7 @@
 //
 // Created by Kibi on 24-5-26.
 //
-// TODO 24-5-26
+// TODO 24-6-2
 #include <bits/stdc++.h>
 using namespace std;
 
@@ -61,10 +61,9 @@ int main(){
     static auto solve = [](){
         static int ans;
         static stack<int> stk;
-        static vector<int> siz(n);
         static vector<bool> vis(n);
+        static vector<int> siz(n), mxp(n);
 
-        static auto init_siz = [](){};
         static auto get_barycentre = [](int u, int n){
             static int res;
             static stack<tuple<int, int, int>> stk; // 0->u, 1->fa, 2->stat
@@ -76,16 +75,73 @@ int main(){
                 stk.pop();
                 switch(stat){
                     case 0:
-                        siz
+                        siz[now] = 1, mxp[now] = 0;
+                        stk.emplace(now, fa, 1);
+                        for(auto i = graph.begin(now); i; i = i->nxt){
+                            if(i->v != fa && !vis[i->v]){
+                                stk.emplace(i->v, now, 0);
+                            }
+                        }
+                        break;
+                    case 1:
+                        mxp[now] = max(mxp[now], n - siz[now]);
+                        res < 0 || mxp[now] > mxp[res] ? res = now : res;
+                        fa ? siz[fa] += siz[now], mxp[fa] = max(mxp[fa], siz[now]) : 0 ;
+                        break;
+                    default:
+                        throw runtime_error("Error state!");
                 }
             }
             return res;
         };
-        static auto calc = [](int u){};
+        static auto calc = [](int u){
+            static int l, r;
+            static vector<int> dis(n), res;
+            static stack<tuple<int, int>> stk; // 1->now, 2->fa
 
-        init_siz();
+            static auto get_dis = [](int u){
+                stk.emplace(u, -1);
+
+                while(!stk.empty()){
+                    auto [now, fa] = stk.top();
+                    stk.pop();
+                    res.emplace_back(dis[now]);
+                    for(auto i = graph.begin(now); i; i = i->nxt){
+                        if(i->v != fa && !vis[i->v]){
+                            dis[i->v] = dis[now] + i->w;
+                            stk.emplace(i->v, now);
+                        }
+                    }
+                }
+            };
+
+            res.clear();
+            dis[u] = 0;
+            get_dis(u);
+
+            sort(res.begin(), res.end());
+            l = 0, r = (int)(res.size() - 1);
+            while(l <= r){
+                res[l] + res[r] <= k ? ans += r - l, ++l : --r;
+            }
+
+            for (auto i = graph.begin(u); i; i = i->nxt){
+                if(!vis[i->v]){
+                    dis[i->v] = i->w;
+                    res.clear();
+                    get_dis(i->v);
+                    sort(res.begin(), res.end());
+                    l = 0, r = (int)(res.size() - 1);
+                    while(l <= r){
+                        res[l] + res[r] <= k ? ans -= r - l, ++l : --r;
+                    }
+                }
+            }
+
+        };
 
         ans = 0;
+        vis[rt] = n;
         stk.emplace(rt);
         while(!stk.empty()){
             static int now, barycentre;
@@ -93,10 +149,10 @@ int main(){
             now = stk.top();
             stk.pop();
             barycentre = get_barycentre(now, siz[now]);
-            calc(now);
             vis[barycentre] = true;
+            calc(barycentre);
 
-            for (auto i = graph.begin(now); i; i = i->nxt){
+            for (auto i = graph.begin(barycentre); i; i = i->nxt){
                 if(!vis[i->v]){
                     stk.emplace(i->v);
                 }
