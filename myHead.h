@@ -7,7 +7,11 @@
 
 #include <bits/stdc++.h>
 
-using std::vector, std::pair, std::runtime_error, std::priority_queue, std::max, std::min, std::string;
+using std::vector, std::tuple, std::pair, std::stack,
+        std::runtime_error,
+        std::priority_queue,
+        std::max, std::min,
+        std::string;
 using ll = long long;
 
 static const int Mod = 1000000007;
@@ -135,7 +139,7 @@ public:
 
 std::mt19937 rnd(std::random_device{}());
 
-class FhqTreap{
+class __not_used_FhqTreap{
     static const int Size = 1000005;
     int siz[Size], ls[Size], rs[Size], val[Size], pri[Size], cnt;
     unsigned int rnk[Size];
@@ -251,6 +255,92 @@ public:
         }
     }
 
+};
+
+// TODO 24-6-18
+class FhqTreap{
+
+    class Node{
+    public:
+        unsigned int rnk;
+        int id, val, siz;
+        Node *ls, *rs;
+
+        void upd_siz(){
+            siz = (ls ? ls->siz : 0) + (rs ? rs->siz : 0);
+        }
+
+        bool operator <= (const int &t) const {
+            return val <= t;
+        }
+
+        bool operator < (const Node &t) const {
+            return rnk < t.rnk;
+        }
+
+        void split(int &k, Node *&l, Node *&r){
+            if(val <= k){
+                l = this;
+                rs ? rs->split(k, rs, r) : (void)(r = nullptr);
+            }else{
+                r = this;
+                ls ? ls->split(k, l, ls) : (void)(l = nullptr);
+            }
+            upd_siz();
+        }
+
+        void split_(int &k, Node *&l, Node *&r){
+            stack<tuple<Node*, Node*&, Node*&>> stk;
+            stack<Node*> changed;
+            stk.emplace(this, l, r);
+            while(!stk.empty()){
+                auto [now, tl, tr] = stk.top();
+                changed.emplace(now);
+                stk.pop();
+                if(*now <= k){
+                    tl = now;
+                    now->rs ? stk.emplace(now->rs, now->rs, tr) : (void)(tr = nullptr);
+                }else {
+                    tr = now;
+                    now->ls ? stk.emplace(now->ls, tl, now->ls) : (void) (tl = nullptr);
+                }
+            }
+            while(!changed.empty()){
+                changed.top()->upd_siz();
+                changed.pop();
+            }
+        }
+
+        static Node* merge(Node *&l, Node *&r){
+            if(!(l && r)){
+                return l ? l : r;
+            }else if(l < r){
+                l->rs = merge(l->rs, r);
+                l->upd_siz();
+                return l;
+            }else{
+                r->ls = merge(l, r->ls);
+                r->upd_siz();
+                return r;
+            }
+        }
+
+        static Node* merge_(Node *&l, Node *&r){
+            stack<tuple<Node*&, Node*&>> stk;
+            stack<Node*> changed;
+            stk.emplace(l, r);
+            while(stk.empty()){
+
+            }
+        }
+    };
+
+    Node *rt;
+
+public:
+    FhqTreap(int id = 1, int val = 0){
+        rt = new Node{rnd(), id, val, 1, nullptr, nullptr};
+    }
 };
 
 // TODO classes Trie and AC are not complete, they may have some mistake, maybe another way to make it
