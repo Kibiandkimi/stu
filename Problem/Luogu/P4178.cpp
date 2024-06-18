@@ -1,7 +1,12 @@
 //
 // Created by Kibi on 24-5-26.
 //
-// TODO 24-6-2
+// TODO 24-6-18
+
+// 用覆盖率测
+// 疑似 main::get_barycentre 复杂度问题
+// 答案也存在问题
+
 #include <bits/stdc++.h>
 using namespace std;
 
@@ -42,6 +47,8 @@ int main(){
             return head[u];
         }
     };
+
+    freopen("../IO/Luogu/P4178/P4178_1.in", "r", stdin);
 
     static int n, k, rt;
     read(n);
@@ -141,7 +148,8 @@ int main(){
         };
 
         ans = 0;
-        vis[rt] = n;
+        vis[rt] = true;
+        siz[rt] = n;
         stk.emplace(rt);
         while(!stk.empty()){
             static int now, barycentre;
@@ -163,4 +171,6 @@ int main(){
 
     int ans = solve();
     printf("%d\n", ans);
+
+    fclose(stdin);
 }
