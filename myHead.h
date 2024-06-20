@@ -257,89 +257,184 @@ public:
 
 };
 
-// TODO 24-6-18
-class FhqTreap{
+// TODO 24-6-20
+class FhqTreapNode {
+    using Node = FhqTreapNode;
 
-    class Node{
-    public:
-        unsigned int rnk;
-        int id, val, siz;
-        Node *ls, *rs;
+    unsigned int rnk;
+    FhqTreapNode *ls, *rs;
+    int siz;
 
-        void upd_siz(){
-            siz = (ls ? ls->siz : 0) + (rs ? rs->siz : 0);
-        }
-
-        bool operator <= (const int &t) const {
-            return val <= t;
-        }
-
-        bool operator < (const Node &t) const {
-            return rnk < t.rnk;
-        }
-
-        void split(int &k, Node *&l, Node *&r){
-            if(val <= k){
-                l = this;
-                rs ? rs->split(k, rs, r) : (void)(r = nullptr);
-            }else{
-                r = this;
-                ls ? ls->split(k, l, ls) : (void)(l = nullptr);
-            }
-            upd_siz();
-        }
-
-        void split_(int &k, Node *&l, Node *&r){
-            stack<tuple<Node*, Node*&, Node*&>> stk;
-            stack<Node*> changed;
-            stk.emplace(this, l, r);
-            while(!stk.empty()){
-                auto [now, tl, tr] = stk.top();
-                changed.emplace(now);
-                stk.pop();
-                if(*now <= k){
-                    tl = now;
-                    now->rs ? stk.emplace(now->rs, now->rs, tr) : (void)(tr = nullptr);
-                }else {
-                    tr = now;
-                    now->ls ? stk.emplace(now->ls, tl, now->ls) : (void) (tl = nullptr);
-                }
-            }
-            while(!changed.empty()){
-                changed.top()->upd_siz();
-                changed.pop();
-            }
-        }
-
-        static Node* merge(Node *&l, Node *&r){
-            if(!(l && r)){
-                return l ? l : r;
-            }else if(l < r){
-                l->rs = merge(l->rs, r);
-                l->upd_siz();
-                return l;
-            }else{
-                r->ls = merge(l, r->ls);
-                r->upd_siz();
-                return r;
-            }
-        }
-
-        static Node* merge_(Node *&l, Node *&r){
-            stack<tuple<Node*&, Node*&>> stk;
-            stack<Node*> changed;
-            stk.emplace(l, r);
-            while(stk.empty()){
-
-            }
-        }
-    };
-
-    Node *rt;
+    FhqTreapNode(unsigned int rnk, int val, int id) : rnk(rnk), ls(nullptr), rs(nullptr), val(val), siz(1), id(id) {}
 
 public:
-    FhqTreap(int id = 1, int val = 0){
-        rt = new Node{rnd(), id, val, 1, nullptr, nullptr};
+    int id;
+    const int val;
+
+    static Node *new_node(int id, int val) {
+        return new Node{rnd(), val, id};
+    }
+
+    void upd_siz() {
+        siz = 1 + (ls ? ls->siz : 0) + (rs ? rs->siz : 0);
+    }
+
+    bool operator<=(const int &t) const {
+        return val <= t;
+    }
+
+    bool operator<(const Node &t) const {
+        return rnk < t.rnk;
+    }
+
+    static int size(Node *u) {
+        return u ? u->siz : 0;
+    }
+
+    void split(int k, Node *&l, Node *&r) {
+        if (val <= k) {
+            l = this;
+            rs ? rs->split(k, rs, r) : (void) (r = nullptr);
+        } else {
+            r = this;
+            ls ? ls->split(k, l, ls) : (void) (l = nullptr);
+        }
+        upd_siz();
+    }
+
+    void split_(int k, Node *&l, Node *&r) {
+        stack<tuple<Node *, Node *&, Node *&>> stk;
+        stack<Node *> changed;
+        stk.emplace(this, l, r);
+        while (!stk.empty()) {
+            auto [now, tl, tr] = stk.top();
+            changed.emplace(now);
+            stk.pop();
+            if (*now <= k) {
+                tl = now;
+                now->rs ? stk.emplace(now->rs, now->rs, tr) : (void) (tr = nullptr);
+            } else {
+                tr = now;
+                now->ls ? stk.emplace(now->ls, tl, now->ls) : (void) (tl = nullptr);
+            }
+        }
+        while (!changed.empty()) {
+            changed.top()->upd_siz();
+            changed.pop();
+        }
+    }
+
+    static Node *merge(Node *l, Node *r) {
+        if (!(l && r)) {
+            return l ? l : r;
+        } else if (l < r) {
+            l->rs = merge(l->rs, r);
+            l->upd_siz();
+            return l;
+        } else {
+            r->ls = merge(l, r->ls);
+            r->upd_siz();
+            return r;
+        }
+    }
+
+    static Node *merge_(Node *&l, Node *&r) {
+        stack<tuple<Node *&, Node *&, Node *&>> stk;// l, r, res
+        stack<Node *> changed;
+        Node *res = nullptr;
+        stk.emplace(l, r, res);
+        while (stk.empty()) {
+            auto [tl, tr, tres] = stk.top();
+            stk.pop();
+            if (!(tl && tr)) {
+                tres = tl ? tl : tr;
+            } else if (tl < tr) {
+                stk.emplace(tl->rs, tr, tl->rs);
+                changed.emplace(tl);
+                tres = tl;
+            } else {
+                stk.emplace(tl, tr->ls, tr->ls);
+                changed.emplace(tr);
+                tres = tr;
+            }
+        }
+        return res;
+    }
+
+    Node *query_by_rnk(int k) {
+        if (size(ls) == k - 1) {
+            return this;
+        } else if (ls && size(ls) > k - 1) {
+            return ls->query_by_rnk(k);
+        } else {
+            return rs->query_by_rnk(k - size(ls) - 1);
+        }
+    }
+
+    Node *query_by_rnk_(int k) {
+        auto now = this;
+        while (k - 1 != size(ls)) {
+            if ((ls ? ls->siz : 0) > k - 1) {
+                now = ls;
+            } else {
+                k -= size(ls) + 1;
+                now = rs;
+            }
+        }
+        return now;
+    }
+
+    Node *separate_son(){
+        Node *tl = ls, *tr = rs;
+        ls = nullptr, rs = nullptr, siz = 1;
+        return merge(tl, tr);
+    }
+};
+
+class FhqTreapTools{
+    using Node = FhqTreapNode;
+public:
+    static Node* add_node(Node *rt, Node* node){
+        if(!rt){
+            return node;
+        }
+        Node *a = nullptr, *b = nullptr;
+        rt->split(node->val, a, b);
+        a = Node::merge(a, node);
+        return Node::merge(a, b);
+    }
+
+    static Node* remove_node(Node *&rt, int k){
+        Node *a = nullptr, *b = nullptr, *res = nullptr;
+        rt->split(k, a, b);
+        a->split(k - 1, a, res);
+        a = Node::merge(a, res->separate_son());
+        rt = Node::merge(a, b);
+        return res;
+    }
+
+    static int query_rnk(Node *rt, int k){
+        Node *a = nullptr, *b = nullptr;
+        rt->split(k - 1, a, b);
+        int res = Node::size(a) + 1;
+        Node::merge(a, b);
+        return res;
+    }
+
+    static Node* query_pre(Node *rt, int k){
+        Node *a = nullptr, *b = nullptr;
+        rt->split(k - 1, a, b);
+        Node *res = a->query_by_rnk(Node::size(a));
+        Node::merge(a, b);
+        return res;
+    }
+
+    static Node* query_suc(Node *rt, int k){
+        Node *a = nullptr, *b = nullptr;
+        rt->split(k, a, b);
+        Node *res = b->query_by_rnk(1);
+        Node::merge(a, b);
+        return res;
     }
 };
 
