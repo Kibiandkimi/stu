@@ -51,6 +51,21 @@ void read(long long &x){
     x = s * w;
 }
 
+class DSUNode{
+    DSUNode *fa;
+public:
+    explicit DSUNode(int val):fa(this), val(val){}
+    int val;
+
+    DSUNode* find(){
+        return fa == this ? this : fa->find();
+    }
+
+    void merge(DSUNode *v){
+        fa = v;
+    }
+};
+
 const int Size = 1000005;
 static const int MaxN = 500005;
 class Graph{
@@ -257,7 +272,6 @@ public:
 
 };
 
-// TODO 24-6-20
 class FhqTreapNode {
     using Node = FhqTreapNode;
 
@@ -327,7 +341,7 @@ public:
     static Node *merge(Node *l, Node *r) {
         if (!(l && r)) {
             return l ? l : r;
-        } else if (l < r) {
+        } else if (*l < *r) {
             l->rs = merge(l->rs, r);
             l->upd_siz();
             return l;

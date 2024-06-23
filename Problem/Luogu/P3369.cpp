@@ -370,14 +370,13 @@ int main(){
 }
  */
 
-// 24-6-20
+// 24-6-23
 
 #include <bits/stdc++.h>
 using namespace std;
 
 mt19937 rnd(random_device{}());
 
-// TODO 24-6-20
 class FhqTreapNode {
     using Node = FhqTreapNode;
 
@@ -447,7 +446,7 @@ public:
     static Node *merge(Node *l, Node *r) {
         if (!(l && r)) {
             return l ? l : r;
-        } else if (l < r) {
+        } else if (*l < *r) {
             l->rs = merge(l->rs, r);
             l->upd_siz();
             return l;
@@ -577,6 +576,9 @@ int main(){
         x = s * w;
     };
 
+    //    freopen("../IO/Luogu/P3369/P3369_14.in", "r", stdin);
+    //    freopen("t.out", "w", stdout);
+
     int n;
     read(n);
 
@@ -613,4 +615,6 @@ int main(){
         }
     }
 
+    //    fclose(stdin);
+    //    fclose(stdout);
 }
