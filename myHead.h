@@ -72,6 +72,59 @@ public:
     }
 };
 
+// incomplete Graph with iterator
+/*
+class Graph{
+    class Edge{
+    public:
+        int v;
+        Edge *nxt;
+    };
+
+    vector<Edge*> head;
+
+public:
+    class iterator{
+        Edge *now;
+        Graph* obj;
+    public:
+        iterator(Graph* ptr, Edge *now):obj(ptr), now(now){}
+
+        iterator():obj(nullptr), now(nullptr){}
+
+        void operator++(){
+            now = now->nxt;
+        }
+
+        void operator++(Edge *i){
+            now = now->nxt;
+        }
+
+        int operator * () const{
+            return now->v;
+        }
+
+        bool operator != (const iterator &it){
+            return it.now != now;
+        }
+
+        bool operator == (const iterator &it){
+            return it.now == now;
+        }
+    };
+
+    Graph(int n):head(n){}
+
+    void add_edge(int u, int v){
+        head[u] = new Edge{v, head[u]};
+    }
+
+    Edge* begin(int u){
+        return head[u];
+    }
+};
+*/
+
 class Lca {
     int fa[Size][20]{}, dep[Size]{};
     Graph *g;
@@ -163,7 +216,7 @@ public:
             updSize(pos);
         }
     }
-//    TODO Do not use it, need to repair
+    //    TODO Do not use it, need to repair
     void splitBySiz(int &x, int &y, int k, int pos){
         if(!pos){
             x = y = 0;
@@ -604,8 +657,493 @@ public:
     }
 };
 
+// Not used for now
+// TODO finish Integer
+// not work well with negative, maybe have some mistake
+class Int{
+    /*
+     * use vector
+     * only support + and pow10
+     * can output as a string
+     * not support negative
+     * */
 
-class Integer {
+    vector<uint> val;
+
+public:
+    Int():val{0}{}
+    explicit Int(uint x){
+        while(x){
+            val.emplace_back(x % 10);
+            x /= 10;
+        }
+    }
+
+    Int operator+(const Int& other) const {
+        Int result;
+        result.val.resize(1 + max(other.val.size(), val.size()));
+        for(size_t i = 0; i < result.val.size() - 1; ++i){
+            result[i + 1] = (result[i] + other[i] + (*this)[i]) / 10;
+            result[i] = (result[i] + other[i] + (*this)[i]) % 10;
+        }
+        result.removeLeadingZeros();
+        return result;
+    }
+
+    Int pow10(uint k){
+        Int result;
+        result.val.resize(k);
+        for(auto &i : val){
+            result.val.emplace_back(i);
+        }
+        return result;
+    }
+
+    string to_string() const{
+        string s;
+        s.reserve(val.size());
+        for(auto &i : val){
+            s.push_back((char)(i + '0'));
+        }
+        reverse(s.begin(), s.end());
+        return s;
+    }
+
+private:
+    void removeLeadingZeros(){
+        while(!val.empty() && val.back() == 0){
+            val.pop_back();
+        }
+    }
+
+    uint operator[](uint i) const{
+        return i < val.size() ? val[i] : 0;
+    }
+
+    uint& operator[](uint i){
+        return val[i];
+    }
+};
+
+template<std::size_t n>
+class Integer{
+    /*
+     * use bitset
+     * n as sizeof bitset
+     * support + - * / and pow2
+     * also support == and >
+     * use Int to output as a string
+     * not work well with negative, wait to fix
+     * */
+
+    std::bitset<n> val;
+    bool sign;
+
+public:
+    Integer() : val(0), sign(false){}
+    explicit Integer(long x) : val(std::abs(x)), sign(std::abs(x) != std::abs(x)){}
+    explicit Integer(string x){
+        if(x.empty()){
+            throw std::invalid_argument("Empty string!");
+        }
+
+        Integer<n> temp;
+
+        sign = (x[0] == '-');
+        if(x[0] == '+' || x[0] == '-'){
+            x[0] = '0';
+        }
+
+        for(auto &i : x){
+            temp = (temp * Integer<n>(10)) + Integer<n>(i - '0');
+            if(i < '0' || '9' < i){
+                throw std::invalid_argument("Error char in string!");
+            }
+        }
+
+        temp.sign = sign;
+        *this = temp;
+    }
+
+    Integer<n> operator+(const Integer<n>& other) const {
+        if(sign == other.sign){
+            Integer result;
+            result.sign = sign;
+            for(size_t i = 0; i < n - 1; ++i){
+                result[i + 1] = (((short)val[i] + other[i] + result[i]) > 1);
+                result[i] = val[i] ^ other[i] ^ result.val[i];
+            }
+            if((short)result[n - 1] + val[n - 1] + other[n - 1] > 1){
+                throw std::out_of_range("The integer is too big!");
+            }
+            result[n - 1] = result[n - 1] + val[n - 1] + other[n - 1];
+            return result;
+        }
+
+        if(sign) {
+            return *this - (-other);
+        }
+        return other - (-*this);
+    }
+
+    Integer<n> operator-(const Integer<n>& other) const {
+        if(sign == other.sign){
+            if(*this == other){
+                return Integer<n>{};
+            }
+            Integer<n> result;
+            result.sign = (other > *this);
+            const Integer<n>& larger = (result.sign ^ sign ^ 1) ? *this : other;
+            const Integer<n>& smaller = (result.sign ^ sign ^ 1) ? other : *this;
+            bool borrow = false;
+            for(size_t i = 0; i < n; ++i){
+                result[i] = larger[i] ^ smaller[i] ^ borrow;
+                borrow = (smaller[i] + borrow > larger[i]);
+            }
+            return result;
+        }
+        return *this + (-other);
+    }
+
+    Integer<n> operator*(const Integer<n>& other) const {
+        Integer<n> result;
+        result.sign = (sign != other.sign);
+        for(size_t i = 0; i < n; i++){
+            if(other[i]){
+                result = result + ((*this).pow2(i));
+            }
+        }
+        return result;
+    }
+
+    Integer<n> operator/(const Integer<n>& other) const {
+        if(other == Integer<n>{}){
+            throw std::invalid_argument("Division by zero!");
+        }else if(other == Integer<n>(1)){
+            return *this;
+        }
+        Integer<n> l(0), r(*this);
+        r.val >>= 1;
+        while(r > l){ // avoid l <= r here
+            Integer<n> mid = l + r;
+            mid.val >>= 1;
+            try{
+                auto tem = other * mid;
+                if(tem > *this){
+                    r = mid - Integer(1);
+                }else{
+                    l = mid + Integer(1);
+                }
+            }catch(std::out_of_range){
+                r = mid - Integer(1);
+            }
+        }
+
+        // to avoid l <= r which cause check to l == r every time
+        Integer<n> mid = l + r;
+        mid.val >>= 1;
+        try{
+            auto tem = other * mid;
+            if(tem > *this){
+                r = mid - Integer(1);
+            }else{
+                l = mid + Integer(1);
+            }
+        }catch(std::out_of_range){
+            r = mid - Integer(1);
+        }
+
+        r.sign = sign ^ other.sign;
+
+        return r;
+    }
+
+    Integer<n> pow2(size_t k) const {
+        if(k > n){
+            throw std::out_of_range("The k is too big!");
+        }
+        Integer<n> result = *this;
+        for(uint i = 0; i < k; ++i){
+            if(result.val[n - i - 1] == true){
+                throw std::out_of_range("The k is too big!");
+            }
+        }
+        result.val <<= k;
+        return result;
+    }
+
+    string to_string(){
+        Int base(1), res;
+        for(uint i = 0; i < n; i++){
+            if(val[i]){
+                res = res + base;
+            }
+            base = base + base;
+        }
+        string ret;
+        if(sign){
+            ret.push_back('-');
+        }
+        ret.append(res.to_string());
+        return ret;
+    }
+
+    bool operator == (const Integer<n>& other) const {
+        return val == other.val && sign == other.sign;
+    }
+
+    bool operator > (const Integer<n>& other) const {
+        if(sign != other.sign){
+            return other.sign;
+        }
+
+        for(int i = n - 1; i >= 0; --i){
+            if(val[i] != other[i]){
+                return val[i];
+            }
+        }
+
+        return false;
+    }
+
+    Integer<n> operator-() const {
+        Integer result = *this;
+        result.sign = !sign;
+        return result;
+    }
+
+private:
+    bool operator[](size_t i) const{
+        return val[i];
+    }
+
+    typename std::bitset<n>::reference operator[](size_t i) {
+        return val[i];
+    }
+};
+
+// gen by AI with a lot of mistake, just not use
+/*class Integer {
+public:
+    // 默认构造函数
+    Integer() : digits(1, 0), sign(true) {}
+
+    // 从字符串构造
+    Integer(const std::string& number) {
+        if (number.empty()) {
+            throw std::invalid_argument("Empty string");
+        }
+        sign = (number[0] != '-');
+        size_t start = (number[0] == '+' || number[0] == '-') ? 1 : 0;
+        digits.reserve(number.size() - start);
+        for (size_t i = start; i < number.size(); ++i) {
+            if (!isdigit(number[i])) {
+                throw std::invalid_argument("Invalid character in number");
+            }
+            digits.push_back(number[i] - '0');
+        }
+        std::reverse(digits.begin(), digits.end());
+        removeLeadingZeros();
+    }
+
+    // 打印大整数
+    void print() const {
+        if (digits.empty()) {
+            std::cout << "0";
+        } else {
+            if (!sign) {
+                std::cout << "-";
+            }
+            for (auto it = digits.rbegin(); it != digits.rend(); ++it) {
+                std::cout << *it;
+            }
+        }
+    }
+
+    // 高精度加法
+    Integer operator+(const Integer& other) const {
+        if (sign == other.sign) {
+            Integer result;
+            result.sign = sign;
+            size_t size = std::max(digits.size(), other.digits.size());
+            result.digits.resize(size, 0);
+            int carry = 0;
+            for (size_t i = 0; i < size; ++i) {
+                int sum = carry;
+                if (i < digits.size()) {
+                    sum += digits[i];
+                }
+                if (i < other.digits.size()) {
+                    sum += other.digits[i];
+                }
+                carry = sum / 10;
+                result.digits[i] = sum % 10;
+            }
+            if (carry) {
+                result.digits.push_back(carry);
+            }
+            return result;
+        }
+        // Handle different signs
+        if (sign) {
+            return *this - (-other);
+        }
+        return other - (-*this);
+    }
+
+    // 高精度减法
+    Integer operator-(const Integer& other) const {
+        // Handle signs and absolute values
+        if (sign == other.sign) {
+            if (*this == other) {
+                return Integer("0");
+            }
+            bool resultSign = *this > other;
+            const Integer& larger = resultSign ? *this : other;
+            const Integer& smaller = resultSign ? other : *this;
+            Integer result;
+            result.sign = resultSign;
+            result.digits.resize(larger.digits.size(), 0);
+            int borrow = 0;
+            for (size_t i = 0; i < larger.digits.size(); ++i) {
+                int diff = larger.digits[i] - borrow;
+                if (i < smaller.digits.size()) {
+                    diff -= smaller.digits[i];
+                }
+                if (diff < 0) {
+                    diff += 10;
+                    borrow = 1;
+                } else {
+                    borrow = 0;
+                }
+                result.digits[i] = diff;
+            }
+            result.removeLeadingZeros();
+            return result;
+        }
+        return *this + (-other);
+    }
+
+    // 高精度乘法
+    Integer operator*(const Integer& other) const {
+        Integer result;
+        result.sign = (sign == other.sign);
+        result.digits.resize(digits.size() + other.digits.size(), 0);
+        for (size_t i = 0; i < digits.size(); ++i) {
+            int carry = 0;
+            for (size_t j = 0; j < other.digits.size(); ++j) {
+                int prod = digits[i] * other.digits[j] + result.digits[i + j] + carry;
+                carry = prod / 10;
+                result.digits[i + j] = prod % 10;
+            }
+            if (carry) {
+                result.digits[i + other.digits.size()] += carry;
+            }
+        }
+        result.removeLeadingZeros();
+        return result;
+    }
+
+    // 高精度除法
+    // maybe wrong
+    Integer operator/(const Integer& other) const {
+        if (other == Integer("0")) {
+            throw std::invalid_argument("Division by zero");
+        }
+        Integer result;
+        result.sign = (sign == other.sign);
+        Integer divisor = other;
+        divisor.sign = true; // Ensure divisor is positive
+
+        Integer current;
+        current.digits.clear();
+        for (size_t i = digits.size(); i-- > 0;) {
+            current.digits.push_back(digits[i]);
+            current.removeLeadingZeros();
+
+            int quotient = 0;
+            while (current >= divisor) {
+                current = current - divisor;
+                ++quotient;
+            }
+            result.digits.push_back(quotient);
+        }
+        std::reverse(result.digits.begin(), result.digits.end());
+        result.removeLeadingZeros();
+        return result;
+    }
+
+    // 高精度取模
+    // maybe wrong
+    Integer operator%(const Integer& other) const {
+        if (other == Integer("0")) {
+            throw std::invalid_argument("Division by zero");
+        }
+        Integer divisor = other;
+        divisor.sign = true; // Ensure divisor is positive
+
+        Integer current;
+        current.digits.clear();
+        for (size_t i = digits.size(); i-- > 0;) {
+            current.digits.push_back(digits[i]);
+            current.removeLeadingZeros();
+
+            while (current >= divisor) {
+                current = current - divisor;
+            }
+        }
+        return current;
+    }
+
+    bool operator==(const Integer& other) const {
+        return sign == other.sign && digits == other.digits;
+    }
+
+    bool operator>(const Integer& other) const {
+        if (sign != other.sign) {
+            return sign;
+        }
+        if (digits.size() != other.digits.size()) {
+            return (sign == (digits.size() > other.digits.size()));
+        }
+        for (size_t i = digits.size(); i-- > 0;) {
+            if (digits[i] != other.digits[i]) {
+                return (sign == (digits[i] > other.digits[i]));
+            }
+        }
+        return false;
+    }
+
+    bool operator>=(const Integer& other) const {
+        return *this > other || *this == other;
+    }
+
+    // 负数化简
+    Integer operator-() const {
+        Integer result = *this;
+        result.sign = !sign;
+        return result;
+    }
+
+private:
+    std::vector<int> digits; // 存储数字的向量
+    bool sign; // 符号，true 表示正数，false 表示负数
+
+    void removeLeadingZeros() {
+        while (digits.size() > 1 && digits.back() == 0) {
+            digits.pop_back();
+        }
+        if (digits.empty()) {
+            sign = true;
+        }
+    }
+};*/
+
+class Integer128 {
+
+    /*
+     * int128 based on string and bitset ?
+     * */
 
     const static string basic[128];
 
@@ -613,21 +1151,21 @@ class Integer {
     lll val;
 
 public:
-    Integer() : val(0) {}
-    explicit Integer(int n) : val(n) {}
-    explicit Integer(ll n) : val(n) {}
-    explicit Integer(lll n) : val(n) {}
+    Integer128() : val(0) {}
+    explicit Integer128(int n) : val(n) {}
+    explicit Integer128(ll n) : val(n) {}
+    explicit Integer128(lll n) : val(n) {}
 
-    Integer operator+(const Integer &b) {
+    Integer128 operator+(const Integer128 &b) {
         lll res(0);
         for (int i = 0; i < 127; i++) {
             res[i + 1] = ((val[i] + b.val[i] + res[i]) > 1);
             res[i] = res[i] ^ val[i] ^ b.val[i];
         }
-        return Integer(res);
+        return Integer128(res);
     }
 
-    bool operator<(const Integer &b) const {
+    bool operator<(const Integer128 &b) const {
         for (int i = 127; i >= 0; i--) {
             if (val[i] < b.val[i]) {
                 return true;
@@ -638,8 +1176,8 @@ public:
         return false;
     }
 
-    Integer pow_2(int p) {
-        return Integer(val << p);
+    Integer128 pow_2(int p) {
+        return Integer128(val << p);
     }
 
     string to_dec() {
@@ -668,7 +1206,7 @@ public:
     }
 };
 
-const string Integer::basic[128] = {
+const string Integer128::basic[128] = {
         "1",
         "2",
         "4",
@@ -799,6 +1337,7 @@ const string Integer::basic[128] = {
         "827501488517303786137132964064381141071"
 };
 
+// TODO finish splay
 // not finish
 /*
 class Splay{
