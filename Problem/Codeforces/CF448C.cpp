@@ -1,5 +1,5 @@
 //
-// Created by Kibi on 24-8-5.
+// Created by kimi on 24-8-5.
 //
 #include <bits/stdc++.h>
 using namespace std;
@@ -43,9 +43,6 @@ int main() {
 }
 
 uint calc(vector<uint>::iterator it, uint len) {
-        if(len == 0) {
-            ret
-        }
     if(len == 1 && *it == 0) {
         return 0;
     }
@@ -55,18 +52,14 @@ uint calc(vector<uint>::iterator it, uint len) {
 
     uint mn = *it, pos = 0;
     for(auto i = it + 1; i - it < len; ++i) {
-        if(*i < mn) {
-            mn = *i;
+        if(*it < mn) {
+            mn = *it;
             pos = i - it;
         }
     }
 
-    if(mn > len) {
-        return len;
-    }
-
     for(auto i = it; i - it < len; ++i) {
-        *i -= mn;
+        *it -= mn;
     }
 
     return min(calc(it, pos + 1) + calc(it + pos + 1, len - pos - 1) + mn, len);
