@@ -51,6 +51,93 @@ void read(long long &x){
     x = s * w;
 }
 
+template<typename Data>
+	class SegTree {
+	public:
+		class Node {
+		public:
+			const uint l, r;
+			Data data;
+			Node *ls, *rs;
+		};
+	private:
+
+		Node *rt;
+
+		void build(Node *u, vector<Data> &val) {
+			if(u->l == u->r) {
+				u->data = val[u->l];
+				return;
+			}
+			auto mid = u->l + u->r >> 1;
+			u->ls = new Node{u->l, mid}, u->rs = new Node{mid + 1, u->r};
+			build(u->ls, val);
+			build(u->rs, val);
+			Data::update(u);
+		}
+
+		void modify(Node *u, uint l, uint r, typename Data::ModifyType type){
+			if(l <= u->l && u->r <= r) {
+				Data::modify(u, type);
+				return;
+			}
+
+			Data::push_down(u);
+
+			auto mid = u->l + u->r >> 1;
+
+			if(l <= mid) {
+				modify(u->ls, l, r, type);
+			}
+			if(r > mid) {
+				modify(u->rs, l, r, type);
+			}
+
+			Data::update(u);
+		}
+
+		Node query(Node *u, uint l, uint r) {
+			if(l <= u->l && u->r <= r) {
+				return *u;
+			}
+
+			Data::push_down(u);
+
+			auto mid = u->l + u->r >> 1;
+
+			if(l > mid) {
+				return query(u->rs, l, r);
+			}
+			if(r <= mid) {
+				return query(u->ls, l, r);
+			}
+
+			Node node_l = query(u->ls, l, r);
+			Node node_r = query(u->rs, l, r);
+			Node node{node_l.l, node_r.r, Data(), &node_l, &node_r};
+
+			Data::update(&node);
+
+			return node;
+		}
+
+	public:
+		explicit SegTree(vector<Data> &val) {
+			rt = new Node{0, val.size() - 1, Data(), nullptr, nullptr};
+			build(rt, val);
+		}
+
+		void modify(uint l, uint r, typename Data::ModifyType type){
+			modify(rt, l, r, type);
+		}
+
+		Data query(uint l, uint r) {
+			return query(rt, l, r).data;
+		}
+
+	};
+
+
 class DSUNode{
     DSUNode *fa;
 public:
