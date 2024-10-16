@@ -144,6 +144,38 @@ public:
 };
 */
 
+// a terrible impl
+// take P4054.cpp for example
+template<typename Data>
+class BIT {
+    vector<Data> data;
+    size_t n;
+public:
+    explicit BIT(const size_t n) : data(n + 1), n(n) {}
+    BIT(const size_t n, Data data) : data(n + 1, data), n(n) {}
+
+    template<typename T>
+    void modify(size_t pos, T val) {
+        if (pos == 0) {
+            return;
+        }
+        while (pos <= n) {
+            Data::modify(data[pos], val);
+            pos += (pos & -pos);
+        }
+    }
+
+    template<typename T, typename S>
+    T query(size_t pos, S information) const {
+        T res{};
+        while (pos) {
+            Data::merge(res, data[pos], information);
+            pos -= (pos & -pos);
+        }
+        return res;
+    }
+};
+
 class Lca {
     int fa[Size][20]{}, dep[Size]{};
     Graph *g;
