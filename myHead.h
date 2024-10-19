@@ -12,6 +12,7 @@ using std::vector, std::tuple, std::pair, std::stack,
         std::priority_queue,
         std::max, std::min,
         std::string;
+
 using ll = long long;
 
 static const int Mod = 1000000007;
@@ -393,7 +394,6 @@ public:
     }
 };
 
-// TODO add ~graph()
 class Graph{
     class Edge{
     public:
@@ -403,8 +403,19 @@ class Graph{
 
     std::vector<Edge*> head;
 
+    static void destroy(Edge* ptr) {
+        ptr->nxt != nullptr ? destroy(ptr->nxt) : static_cast<void>(0);
+        delete ptr;
+    }
+
 public:
     explicit Graph(int n):head(n + 1, nullptr){}
+
+    ~Graph() {
+    	for (auto &i : head) {
+           	destroy(i);
+        }
+    }
 
     void add_edge(int u, int v, int w, bool flag = false){
         head[u] = new Edge{v, w, head[u]};
@@ -417,58 +428,80 @@ public:
     }
 };
 
-// incomplete Graph with iterator
-/*
-class Graph{
+// graph with iterator
+class ItGraph{
+
+	template <typename T>
+	using vec = vector<T>;
+
     class Edge{
     public:
-        int v;
+        uint v;
         Edge *nxt;
     };
 
-    vector<Edge*> head;
-
-public:
-    class iterator{
-        Edge *now;
-        Graph* obj;
+    class Iterator {
+        Edge *nxt;
     public:
-        iterator(Graph* ptr, Edge *now):obj(ptr), now(now){}
+        explicit Iterator(Edge *nxt) :nxt(nxt) {}
 
-        iterator():obj(nullptr), now(nullptr){}
-
-        void operator++(){
-            now = now->nxt;
+        bool operator != (const Iterator &other) const {
+            return nxt != other.nxt;
         }
 
-        void operator++(Edge *i){
-            now = now->nxt;
+        uint operator * () const {
+            return nxt->v;
         }
 
-        int operator * () const{
-            return now->v;
+        const Iterator &operator++ () {
+            nxt = nxt->nxt;
+            return *this;
         }
 
-        bool operator != (const iterator &it){
-            return it.now != now;
+    };
+
+    class MyList {
+        Edge *head;
+
+    public:
+        MyList() : head {nullptr} {}
+        explicit MyList(Edge* head) : head(head) {}
+
+        Iterator begin() const {
+            return Iterator(head);
         }
 
-        bool operator == (const iterator &it){
-            return it.now == now;
+        static Iterator end() {
+            return Iterator(nullptr);
         }
     };
 
-    Graph(int n):head(n){}
+    vec<Edge*> head;
 
-    void add_edge(int u, int v){
-        head[u] = new Edge{v, head[u]};
+    static void destroy(Edge* ptr) {
+        ptr->nxt != nullptr ? destroy(ptr->nxt) : static_cast<void>(0);
+        delete ptr;
     }
 
-    Edge* begin(int u){
-        return head[u];
+public:
+    explicit ItGraph(size_t n):head(n, nullptr){}
+
+    ~ItGraph() {
+        for (auto &i: head) {
+            destroy(i);
+        }
+    }
+
+    void add_edge(uint u, uint v, bool flag = false){
+        head[u] = new Edge{v, head[u]};
+
+        flag ? add_edge(v, u) : static_cast<void>(0);
+    }
+
+    MyList begin(uint u){
+        return MyList{head[u]};
     }
 };
-*/
 
 // a terrible impl
 // take P4054.cpp for example
