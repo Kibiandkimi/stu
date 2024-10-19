@@ -6,7 +6,9 @@
 #include <bitset>
 #include <cctype>
 #include <cstdio>
+#include <map>
 #include <random>
+#include <set>
 #include <sys/types.h>
 #include <vector>
 using namespace std;
@@ -46,32 +48,6 @@ int main() {
     auto n = read<uint>();
     Config config{n, vector<uint>(n)};
 
-    /*int seq[n / 2 + 1]; //seq[1],seq[2],...,seq[n] 为生成的序列
-    int sum = 1e9;
-    for(int i=1;i<n / 2;i++)
-    {
-        int R=sum/(n / 2-i+1)*2;
-        seq[i] = rnd() % R; // 在 0 到 R 之间均匀随机选择一个整数作为 seq[i]
-        sum-=seq[i];
-    }
-    seq[n / 2]=sum;
-
-    for (uint i = 0; i < n / 2; i++) {
-        config.arr[i] = seq[i + 1];
-    }
-
-    sum = 1e9;
-    for(int i=1;i<n / 2;i++)
-    {
-        int R=sum/(n/2-i+1)*2;
-        seq[i] = rnd() % R; // 在 0 到 R 之间均匀随机选择一个整数作为 seq[i]
-        sum-=seq[i];
-    }
-    seq[n/2]=sum;
-
-    for (uint i = n / 2; i < n; i++) {
-        config.arr[i] = seq[i - n / 2 + 1];
-    }*/
     for (auto &i : config.arr) {
         i = read<uint>();
     }
@@ -92,52 +68,54 @@ public:
     uint val;
 };
 
+class Set {
+public:
+    vector<uint> id;
+    uint sum{0};
+};
+
 vector<uint> solve(const Config &config) {
-    // a stupid trying
+    vector<Node> nodes(config.n);
+    uint cnt = 0;
+    for_each(nodes.begin(), nodes.end(), [&](Node &u){u = {cnt, config.arr[cnt]}; cnt++;});
+    shuffle(nodes.begin(), nodes.end(), rnd);
 
-    vector<Node> temp(config.n);
-    for (uint i = 0; i < config.n; ++i) {
-        temp[i] = {i, config.arr[i]};
-    }
+    while (true) {
+        vector<Set> a, b;
+        for (uint i = 0; i < 1000; i++) {
+            Set now;
+            for (uint j = 0; j < config.n / 2; j++) {
+                if (rnd() & 1) {
+                    now.id.push_back(nodes[j].id);
+                    now.sum += nodes[j].val;
+                }
+            }
+            a.push_back(now);
+        }
+        for (uint i = 0; i < 1000; i++) {
+            Set now;
+            for (uint j = config.n / 2; j < config.n; j++) {
+                if (rnd() & 1) {
+                    now.id.push_back(nodes[j].id);
+                    now.sum += nodes[j].val;
+                }
+            }
+            b.push_back(now);
+        }
 
-    sort(temp.begin(), temp.end(), [](const Node &a, const Node &b) {return a.val < b.val;});
-
-	uint cnt = 0;
-	vector<uint> a(config.n / 2), b(config.n / 2);
-	for_each(a.begin(), a.end(), [&cnt](auto &u){
-		u = cnt++;
-		cnt++;
-	});
-	cnt = 1;
-	for_each(b.begin(), b.end(), [&cnt](auto &u){
-		u = cnt++;
-		cnt++;
-	});
-
-	uint now = 0;
-	for (auto &i : a) {
-		now += config.arr[i];
-	}
-
-    for (uint i = 0; i < config.n / 2; ++i) {
-        for (uint j = 0; j < config.n / 2; ++j) {
-            if (now + config.arr[b[j]] - config.arr[a[i]] == 1'000'000'000) {
-                swap(a[i], b[j]);
-                for_each(a.begin(), a.end(), [](auto &u){++u;});
-                return a;
+        for (auto &i : a) {
+            for (auto &j : b) {
+                if (i.sum + j.sum == 1'000'000'000) {
+                    vector<uint> res;
+                    for (auto &k : i.id) {
+                        res.push_back(k + 1);
+                    }
+                    for (auto &k : j.id) {
+                        res.push_back(k + 1);
+                    }
+                    return res;
+                }
             }
         }
     }
-
-	uint k = config.n / 2;
-
-	while (now != 1'000'000'000) {
-		uint l = rnd() % k, r = rnd() % k;
-		swap(a[l], b[r]);
-		now += config.arr[b[r]];
-		now -= config.arr[a[l]];
-	}
-
-	for_each(a.begin(), a.end(), [](auto &u){++u;});
-	return a;
 }

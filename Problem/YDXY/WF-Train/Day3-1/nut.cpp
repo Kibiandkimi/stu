@@ -61,10 +61,6 @@ ull solve(const Config& config) {
                 sum += i;
                 pos[cnt++] = now; // add
                 now++;
-                if (now > config.k && now - config.k == pos[lst_cnt]) { // check if trans
-                    sum -= config.h[lst_cnt];
-                    lst_cnt++;
-                }
             } else {
                 // force to trans
                 while (sum + i > u) {
@@ -76,6 +72,10 @@ ull solve(const Config& config) {
                 sum += i;
                 pos[cnt++] = now;
                 now++;
+            }
+            if (now > config.k && now - config.k == pos[lst_cnt]) { // check if trans
+                sum -= config.h[lst_cnt];
+                lst_cnt++;
             }
         }
         return pos.back() <= config.m;

@@ -52,90 +52,330 @@ void read(long long &x){
 }
 
 template<typename Data>
-	class SegTree {
-	public:
-		class Node {
-		public:
-			const uint l, r;
-			Data data;
-			Node *ls, *rs;
-		};
-	private:
+class SegTree {
+public:
+    class Node {
+    public:
+        const uint l, r;
+        Data data;
+        Node *ls, *rs;
+    };
+private:
 
-		Node *rt;
+    Node *rt;
 
-		void build(Node *u, vector<Data> &val) {
-			if(u->l == u->r) {
-				u->data = val[u->l];
-				return;
-			}
-			auto mid = u->l + u->r >> 1;
-			u->ls = new Node{u->l, mid}, u->rs = new Node{mid + 1, u->r};
-			build(u->ls, val);
-			build(u->rs, val);
-			Data::update(u);
-		}
+    void build(Node *u, vector<Data> &val) {
+        if(u->l == u->r) {
+            u->data = val[u->l];
+            return;
+        }
+        auto mid = u->l + u->r >> 1;
+        u->ls = new Node{u->l, mid}, u->rs = new Node{mid + 1, u->r};
+        build(u->ls, val);
+        build(u->rs, val);
+        Data::update(u);
+    }
 
-		void modify(Node *u, uint l, uint r, typename Data::ModifyType type){
-			if(l <= u->l && u->r <= r) {
-				Data::modify(u, type);
-				return;
-			}
+    void modify(Node *u, uint l, uint r, typename Data::ModifyType type){
+        if(l <= u->l && u->r <= r) {
+            Data::modify(u, type);
+            return;
+        }
 
-			Data::push_down(u);
+        Data::push_down(u);
 
-			auto mid = u->l + u->r >> 1;
+        auto mid = u->l + u->r >> 1;
 
-			if(l <= mid) {
-				modify(u->ls, l, r, type);
-			}
-			if(r > mid) {
-				modify(u->rs, l, r, type);
-			}
+        if(l <= mid) {
+            modify(u->ls, l, r, type);
+        }
+        if(r > mid) {
+            modify(u->rs, l, r, type);
+        }
 
-			Data::update(u);
-		}
+        Data::update(u);
+    }
 
-		Node query(Node *u, uint l, uint r) {
-			if(l <= u->l && u->r <= r) {
-				return *u;
-			}
+	// TODO better impl
+    Node query(Node *u, uint l, uint r) {
+        if(l <= u->l && u->r <= r) {
+            return *u;
+        }
 
-			Data::push_down(u);
+        Data::push_down(u);
 
-			auto mid = u->l + u->r >> 1;
+        auto mid = u->l + u->r >> 1;
 
-			if(l > mid) {
-				return query(u->rs, l, r);
-			}
-			if(r <= mid) {
-				return query(u->ls, l, r);
-			}
+        if(l > mid) {
+            return query(u->rs, l, r);
+        }
+        if(r <= mid) {
+            return query(u->ls, l, r);
+        }
 
-			Node node_l = query(u->ls, l, r);
-			Node node_r = query(u->rs, l, r);
-			Node node{node_l.l, node_r.r, Data(), &node_l, &node_r};
+        Node node_l = query(u->ls, l, r);
+        Node node_r = query(u->rs, l, r);
+        Node node{node_l.l, node_r.r, Data(), &node_l, &node_r};
 
-			Data::update(&node);
+        Data::update(&node);
 
-			return node;
-		}
+        return node;
+    }
 
-	public:
-		explicit SegTree(vector<Data> &val) {
-			rt = new Node{0, val.size() - 1, Data(), nullptr, nullptr};
-			build(rt, val);
-		}
+	void destroy(Node *u) {
+        u->ls ? destroy(u->ls) : static_cast<void>(0);
+        u->rs ? destroy(u->rs) : static_cast<void>(0);
+        delete u;
+    }
 
-		void modify(uint l, uint r, typename Data::ModifyType type){
-			modify(rt, l, r, type);
-		}
+public:
+    explicit SegTree(vector<Data> &val) {
+        rt = new Node{0, val.size() - 1, Data(), nullptr, nullptr};
+        build(rt, val);
+    }
 
-		Data query(uint l, uint r) {
-			return query(rt, l, r).data;
-		}
+	~SegTree() {
+		destroy(rt);
+	}
 
-	};
+    void modify(uint l, uint r, typename Data::ModifyType type){
+        modify(rt, l, r, type);
+    }
+
+    Data query(uint l, uint r) {
+        return query(rt, l, r).data;
+    }
+
+};
+
+// maybe a better impl of previous
+// not finished
+
+/// an example of type Data
+///class Data{
+///    uint val;
+///public:
+///    Data() : val(0) {}
+///    Data(uint val) : val(val) {}
+///
+///    Data operator + (const Data &x) const {
+///        return {val > x.val ? val - x.val : x.val - val};
+///    }
+///
+///    uint get() const {
+///        return val;
+///    }
+///};
+
+template<typename Data>
+class SegTree {
+    class Node {
+    public:
+        Node *ls, *rs;
+        size_t l, r;
+        Data val;
+
+        void update() {
+            val = ls->val + rs->val;
+        }
+    };
+
+    template<typename Iterator>
+    void build(Node *u, uint l, uint r, Iterator it) {
+        u->l = l, u->r = r;
+        if (l == r) {
+            u->val = *(it + l);
+            return;
+        }
+        uint mid = (l + r) / 2;
+        u->ls = new Node(), u->rs = new Node();
+        build(u->ls, l, mid, it);
+        build(u->rs, mid + 1, r, it);
+        u->update();
+    }
+
+    Node *rt;
+
+    void modify(Node *u, size_t pos, Data val) {
+        if (u->l == u->r){
+            u->val = val;
+            return ;
+        }
+        auto mid = (u->l + u->r) / 2;
+        if (pos <= mid) {
+            modify(u->ls, pos, val);
+        }else {
+            modify(u->rs, pos, val);
+        }
+        u->update();
+    }
+
+public:
+    template<typename Iterator>
+    SegTree(size_t n, Iterator it) {
+        build(rt = new Node(), 0, n - 1, it);
+    }
+
+    void modify(size_t pos, Data val) {
+        modify(rt, pos, move(val));
+    }
+
+    Data query(size_t pos) { // TODO
+
+    }
+
+//    Data _query() {
+//        return rt->val;
+//    }
+
+    ~SegTree() = default; // TODO
+};
+
+// Another impl, like the impl above
+template <typename Data>
+class SegTree {
+    /*
+    * impl operator +, +=, -= for Data
+    * use .clear() instead of -=
+    * */
+
+    class Node {
+    public:
+        Node() : ls(nullptr), rs(nullptr), l(0), r(0), val(Data()){}
+
+        Node *ls, *rs;
+        size_t l, r;
+        Data val;
+
+        void update() {
+            val = ls->val + rs->val;
+        }
+
+        void push_down() {
+            ls->val += val;
+            rs->val += val;
+            // val -= Data();
+            val.clear();
+        }
+    };
+
+    template <typename Iterator>
+    static void build(Node *u, size_t l, size_t r, Iterator it) {
+        u->l = l, u->r = r;
+        if (l == r) {
+            u->val = move(*(it + l));
+            return;
+        }
+        size_t mid = (l + r) / 2;
+        u->ls = new Node(), u->rs = new Node();
+        build(u->ls, l, mid, it);
+        build(u->rs, mid + 1, r, it);
+        u->update();
+    }
+
+    template <typename Modifier>
+    void modify(Node *u, size_t l, size_t r, Modifier modifier) {
+        if (l <= u->l && u->r <= r) {
+            modifier(u->val);
+            return;
+        }
+
+        u->push_down();
+
+        auto mid = (u->l + u->r) / 2;
+
+        if (l <= mid) {
+            modify(u->ls, l, r, modifier);
+        }
+        if (r > mid) {
+            modify(u->rs, l, r, modifier);
+        }
+        u->update();
+    }
+
+    const Data& query(Node *u, size_t pos) {
+        if (u->l == u->r) {
+            return u->val;
+        }
+
+        u->push_down();
+
+        size_t mid = (u->l + u->r) / 2;
+        if (pos <= mid) {
+            return query(u->ls, pos);
+        }
+        return query(u->rs, pos);
+    }
+
+    Node *rt;
+
+    static void destroy (Node *u){
+        u->ls ? destroy(u->ls) : static_cast<void>(0);
+        u->rs ? destroy(u->rs) : static_cast<void>(0);
+        delete u;
+    }
+
+public:
+    template <typename Iterator>
+    SegTree(uint n, Iterator it) {
+        build(rt = new Node(), 0, n - 1, it);
+    }
+
+    ~SegTree() {
+        destroy(rt);
+    }
+
+    template <typename Modifier>
+    void modify(size_t l, size_t r, Modifier modifier) {
+        modify(rt, l, r, modifier);
+    }
+
+    const Data& query(size_t pos) {
+        return query(rt, pos);
+    }
+};
+
+// Another example for Data
+/*
+class MySet {
+public:
+    MySet():st(new set<uint>()), st2(new set<uint>()){}
+    // ~MySet(){
+    //     delete st;
+    //     delete st2;
+    // }
+
+    // set<uint> *st, *st2;
+    unique_ptr<set<uint>> st, st2;
+
+    MySet operator + (const MySet &other) const {
+        return {};
+    }
+
+    void operator += (const MySet & other) const {
+        // if (!other.st->empty()) {
+        for (auto &i : *other.st) {
+            st->insert(i);
+        }
+        // }
+        // if (!other.st2->empty()) {
+        for (auto &i : *other.st2) {
+            st->erase(i);
+        }
+        // }
+    }
+
+    void operator -= (const MySet & other) const {
+        st->clear();
+        st2->clear();
+    }
+
+    void clear() const {
+        st->clear();
+        st2->clear();
+    }
+};
+*/
 
 
 class DSUNode{
@@ -153,8 +393,7 @@ public:
     }
 };
 
-const int Size = 1000005;
-static const int MaxN = 500005;
+// TODO add ~graph()
 class Graph{
     class Edge{
     public:
@@ -747,109 +986,62 @@ public:
     }
 };
 
+template<typename T>
 class KMP {
-    class Pat {
-        const size_t len, n;
-        const vector<int> str;
-        vector<vector<int>> nxt;
+	vector<T> pat;
+	vector<uint> pi;
 
-        class Res {
-        public:
-            int num{0};
-            vector<int> pos{vector<int>(0)};
-        };
+	void init() {
+		for (uint i = 1; i < pi.size(); i++) {
+			uint j = pi[i - 1];
+			while (j != 0 && pat[j] != pat[i]) {
+				j = pi[j - 1];
+			}
+			pi[i] = j + (pat[i] == pat[j]);
+		}
+	}
 
-    public:
-        Pat(vector<int> str, int n) : str(str),
-                                      n(n),
-                                      len(str.size()),
-                                      nxt(len + 1, vector<int>(n)) {
-            if (str.empty()) {
-                throw runtime_error("ErrorSize!");
-            }
-
-            int pre = 0;
-            for (int i = 0; i < len; i++) {
-                for (int j = 0; j < n; j++) {
-                    nxt[i][j] = nxt[pre][j];
-                }
-                nxt[i][str[i]] = i + 1;
-                pre = nxt[pre][str[i]];
-            }
-            for (int j = 0; j < n; j++) {
-                nxt[len][j] = nxt[pre][j];
-            }
-        }
-
-        Res search(vector<int> txt) {
-            size_t len_txt = txt.size();
-            int stat = 0;
-            Res res;
-            for (int i = 0; i < len_txt; i++) {
-                if (txt[i] >= n) {
-                    stat = 0;
-                } else {
-                    stat = nxt[stat][txt[i]];
-                    if (stat == len) {
-                        res.num++;
-                        res.pos.emplace_back(i);
-                    }
-                }
-            }
-            return res;
-        }
-    };
-};
-
-class Manacher{
-
-    int readStr(char *c){
-        int tem = getchar();
-        while(tem < 'a' || 'z' < tem){
-            tem =getchar();
-        }
-        static int i = 0;
-        while('a' <= tem && tem <= 'z'){
-            c[i++] = (char)tem;
-            tem = getchar();
-        }
-        return i;
-    }
-
-    int main(){
-        static char raw[24000005], str[46000005];
-        static int len = readStr(raw+1), d[46000005], ans = 0;
-        str[0] = '#';
-        for(int i = 1; i <= len; i++){
-            str[i*2] = raw[i];
-            str[i*2 - 1] = '*';
-        }
-        str[len*2+1] = '*';
-        len = len*2+1;
-        for(int i = 1; i <= len; i++){
-            static int mid = 0, r = 0;
-            if(i <= r){
-                d[i] = std::min(d[(mid<<1)-i], r-i+1);
-            }
-            while(str[i - d[i]] == str[i + d[i]] && i + d[i] <= len){
-                ++d[i];
-            }
-            if(d[i] + i > r){
-                r = d[i] + i - 1, mid = i;
-            }
-            if(d[i] > ans){
-                ans = d[i];
-            }
-        }
-        printf("%d", ans-1);
-        return 0;
-    }
 public:
-    Manacher(){
-        main();
-    }
+	explicit KMP(vector<T> &pat) : pat(move(pat)), pi(this->pat.size()) {init();}
+	explicit KMP(const vector<T> &pat) : pat(pat), pi(this->pat.size()) {init();}
 
+	vector<uint> match(const vector<T> &txt) {
+		vector<uint> res;
+		uint j = 0;
+		for (auto i = txt.begin(); i != txt.end(); ++i) {
+			while (j != 0 && pat[j] != *i) {
+				j = pi[j - 1];
+			}
+			pat[j] == *i ? ++j : j;
+			j == pat.size() ? static_cast<void>(res.emplace_back(i - txt.begin()), j = pi[j - 1]) : static_cast<void>(0);
+		}
+		return move(res);
+	}
 };
+
+template<typename T>
+vector<int> manacher(const vector<T> &str, const T no_used) {
+	vector<T> new_str(str.size() * 2 + 1, no_used);
+	for(uint i = 0; i < str.size(); ++i) {
+		new_str[i * 2 + 1] = str[i];
+	}
+
+	vector<int> res(new_str.size());
+	int right = -1, left = 0;
+	for (int i = 0; i < new_str.size(); i += 2) {
+		int k = i > right ? 1 : min(res[left + right - i], right - i + 1);
+		while(i >= k && i + k < new_str.size() && operator==(new_str[i - k], new_str[i + k])) {
+			++k;
+		}
+		res[i] = k--;
+		if(i + k > right) {
+			right = i + k;
+			left = i - k;
+		}
+	}
+
+	return res;
+}
 
 class Matrix{
     size_t n, m;

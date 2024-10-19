@@ -111,6 +111,7 @@ Warning:
 DP:
     -背包: P4158, P1282
     -树形: P2607
+    -区间: P2466
 
 图论:
     P3942
@@ -121,6 +122,8 @@ DP:
 数据结构:
     -树链剖分: P4092
     -平衡树: P3224
+    -线段树: P2824, P1502
+    -笛卡尔树: P5854
 
 贪心:
     P2123, P1084
@@ -130,12 +133,27 @@ DP:
     P1084, CF413E
 
 二分:
-    -二分答案: P1182, P2678
+    -二分答案: P1182, P2678, P2824
 
+分治:
+    CF1442D
+
+哈希:
+    P3370, P3498, P4503, P8085
+
+字符串:
+    -Manacher: P3501
+    -KMP: P3065
 
 语法:
-不调用函数获取其返回值类型
-定义define作用域
+不调用函数获取其返回值类型(typeof)?
+定义define作用域(#undef)?
+P4503 unique_ptr初探
+P8085 MyString without unique_ptr
+函数作为参数传递
 
 英文:
 DSU(Disjoint Set Union) 并查集
+
+TODO:
+https://www.luogu.com.cn/article/vix37anf 整数划分转移

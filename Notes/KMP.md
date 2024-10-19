@@ -2,61 +2,41 @@
 
 字符串匹配算法，在txt中寻找pat。
 
-````cpp
+```c++
+template<typename T>
 class KMP {
-    class Pat {
-        const size_t len, n;
-        const vector<int> str;
-        vector<vector<int>> nxt;
+	vector<T> pat;
+	vector<uint> pi;
 
-        class Res {
-        public:
-            int num{0};
-            vector<int> pos{vector<int>(0)};
-        };
+	void init() {
+		for (uint i = 1; i < pi.size(); i++) {
+			uint j = pi[i - 1];
+			while (j != 0 && pat[j] != pat[i]) {
+				j = pi[j - 1];
+			}
+			pi[i] = j + (pat[i] == pat[j]);
+		}
+	}
 
-    public:
-        Pat(vector<int> str, int n) : str(str),
-                                      n(n),
-                                      len(str.size()),
-                                      nxt(len + 1, vector<int>(n)) {
-            if (str.empty()) {
-                throw runtime_error("ErrorSize!");
-            }
+public:
+	explicit KMP(vector<T> &pat) : pat(move(pat)), pi(pat.size()) {init();}
+	explicit KMP(const vector<T> &pat) : pat(pat), pi(pat.size()) {init();}
 
-            int pre = 0;
-            for (int i = 0; i < len; i++) {
-                for (int j = 0; j < n; j++) {
-                    nxt[i][j] = nxt[pre][j];
-                }
-                nxt[i][str[i]] = i + 1;
-                pre = nxt[pre][str[i]];
-            }
-            for (int j = 0; j < n; j++) {
-                nxt[len][j] = nxt[pre][j];
-            }
-        }
+	vector<uint> match(const vector<T> &txt) {
+		vector<uint> res;
+		uint j = 0;
+		for (auto i = txt.begin(); i != txt.end(); ++i) {
+			while (j != 0 && pat[j] != *i) {
+				j = pi[j - 1];
+			}
+			pat[j] == *i ? ++j : j;
+			j == pat.size() ? static_cast<void>(res.emplace_back(i - txt.begin()), j = pi[j - 1]) : static_cast<void>(0);
+		}
+		return res;
+	}
 
-        Res search(vector<int> txt) {
-            size_t len_txt = txt.size();
-            int stat = 0;
-            Res res;
-            for (int i = 0; i < len_txt; i++) {
-                if (txt[i] >= n) {
-                    stat = 0;
-                } else {
-                    stat = nxt[stat][txt[i]];
-                    if (stat == len) {
-                        res.num++;
-                        res.pos.emplace_back(i);
-                    }
-                }
-            }
-            return res;
-        }
-    };
 };
-````
+```
 
 
 
