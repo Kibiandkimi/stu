@@ -146,7 +146,7 @@ DP:
     -KMP: P3065
 
 语法:
-不调用函数获取其返回值类型(typeof)?
+不调用函数获取其返回值类型(typeof, decltype)?
 定义define作用域(#undef)?
 P4503 unique_ptr初探
 P8085 MyString without unique_ptr

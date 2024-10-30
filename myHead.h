@@ -488,7 +488,7 @@ public:
 
     ~ItGraph() {
         for (auto &i: head) {
-            destroy(i);
+            i != nullptr ? destroy(i) : static_cast<void>(0);
         }
     }
 
