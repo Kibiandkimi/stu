@@ -2,6 +2,7 @@
 io
 .vscode
 .idea
+test
 sol
 temp.cpp
 temp

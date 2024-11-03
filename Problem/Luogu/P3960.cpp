@@ -219,3 +219,89 @@ int main(){
 }
 
  * */
+
+// 24-11-3
+// 40pts
+/*
+#include <cctype>
+#include <cstdio>
+#include <sys/types.h>
+#include <tuple>
+#include <vector>
+
+template<typename T>
+using vec = std::vector<T>;
+using u32 = const unsigned int;
+using u64 = const unsigned long long;
+using ull = unsigned long long;
+
+using std::tuple;
+
+template<typename T>
+T read() {
+    T s = 0, w = 1, c = getchar();
+    while (!isdigit(c)) {
+        if (c == '-') {
+            w = -1;
+        }
+        c = getchar();
+    }
+    while (isdigit(c)) {
+        s = s * 10 + c - '0';
+        c = getchar();
+    }
+    return s * w;
+}
+
+using Query = tuple<uint, uint>;
+
+class Config {
+public:
+    u32 n, m, q;
+    vec<Query> queries;
+};
+
+using Res = vec<uint>;
+
+Res solve(const Config&);
+
+int main() {
+    u32 n = read<uint>(), m = read<uint>(), q = read<uint>();
+    Config config{n, m, q, vec<Query>(q)};
+    for (auto &i : config.queries) {
+        u32 x = read<uint>(), y = read<uint>();
+        i = {x, y};
+    }
+    auto ans = solve(config);
+    for (auto &i : ans) {
+        printf("%u\n", i);
+    }
+}
+
+Res solve(const Config &config) {
+    vec<vec<uint>> matrix(config.n, vec<uint>(config.m));
+    uint cnt = 0;
+    for (auto &i : matrix) {
+        for (auto &j : i) {
+            j = ++cnt;
+        }
+    }
+    Res res;
+    res.reserve(config.q);
+    for (auto &i : config.queries) {
+        auto [x, y] = i;
+        x--, y--;
+        uint now = matrix[x][y];
+        for (uint j = y + 1; j < config.m; j++) {
+            matrix[x][j - 1] = matrix[x][j];
+        }
+        for (uint j = x + 1; j < config.n; j++) {
+            matrix[j - 1].back() = matrix[j].back();
+        }
+        matrix.back().back() = now;
+        res.push_back(now);
+    }
+    return res;
+}
+
+* */
